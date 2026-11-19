@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#252747">
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1027,13 +1026,318 @@ document.addEventListener("DOMContentLoaded",()=>{
 // AKHIR JAVASCRIPT
 // ==========================================
 </script>
-  
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js");
-  });
+const PAB_SUPABASE_URL = "https://hzgsycljarhnuvriisqw.supabase.co";
+
+const PAB_SUPABASE_KEY = "sb_publishable_QMwbvxl7scJsRctxCgzU0A_b0Z8tj-i";
+
+window.pabSupabase = window.supabase.createClient(
+  PAB_SUPABASE_URL,
+  PAB_SUPABASE_KEY
+);
+
+console.log("Koneksi Supabase PAB berhasil disiapkan!");
+</script>
+
+<style>
+#pabAccountButton {
+  position:fixed;
+  right:15px;
+  bottom:90px;
+  z-index:9998;
+  padding:13px 18px;
+  border:0;
+  border-radius:25px;
+  background:#252747;
+  color:white;
+  font-weight:bold;
 }
+#pabAccountPanel {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:#0008;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+#pabAccountCard {
+  width:100%;
+  max-width:380px;
+  background:white;
+  color:#252747;
+  padding:22px;
+  border-radius:18px;
+  font-family:Arial,sans-serif;
+}
+#pabAccountCard input {
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  margin:7px 0 13px;
+  border:1px solid #ccc;
+  border-radius:9px;
+}
+#pabAccountCard button {
+  padding:12px;
+  border:0;
+  border-radius:9px;
+  cursor:pointer;
+}
+.pabAccountPrimary {
+  width:100%;
+  background:#252747;
+  color:white;
+  font-weight:bold;
+}
+#pabAccountMessage {
+  font-size:13px;
+  margin-top:12px;
+}
+</style>
+
+<button id="pabAccountButton" type="button">
+  👤 Akun PAB
+</button>
+
+<div id="pabAccountPanel">
+  <div id="pabAccountCard">
+    <h2>👋 Akun PAB</h2>
+    <p>Selamat datang di Pelajar Anti Bosan!</p>
+
+    <div id="pabAccountForm">
+      <label>Nama tampilan</label>
+      <input id="pabName" placeholder="Nama panggilan">
+
+      <label>Email</label>
+      <input id="pabEmail" type="email"
+        placeholder="Email kamu">
+
+      <label>Password</label>
+      <input id="pabPassword" type="password"
+        placeholder="Minimal 6 karakter">
+
+      <button class="pabAccountPrimary"
+        id="pabSignup" type="button">
+        Daftar Akun
+      </button>
+
+      <button class="pabAccountPrimary"
+        id="pabLogin" type="button"
+        style="margin-top:9px">
+        Login
+      </button>
+    </div>
+
+    <div id="pabAccountProfile" style="display:none">
+  <h3>👤 Profil Saya</h3>
+
+  <label>Nama tampilan</label>
+  <input id="pabEditName" type="text" placeholder="Nama kamu">
+
+  <p id="pabProfileEmail"></p>
+
+  <button id="pabSaveName" type="button" class="pabAccountPrimary">
+    Simpan Perubahan
+  </button>
+
+
+  <button id="pabLogout" type="button" style="margin-top:10px">
+    Logout
+  </button>
+</div>
+
+    <p id="pabAccountMessage"></p>
+
+    <button id="pabClose" type="button"
+      style="margin-top:12px;background:#eee">
+      Tutup
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const client = window.pabSupabase;
+
+  const panel = document.getElementById("pabAccountPanel");
+  const form = document.getElementById("pabAccountForm");
+  const profile = document.getElementById("pabAccountProfile");
+  const message = document.getElementById("pabAccountMessage");
+
+  function showMessage(text){
+    message.textContent = text;
+  }
+
+  function showProfile(user,name){
+  form.style.display="none";
+  profile.style.display="block";
+
+  document.getElementById("pabEditName").value =
+    name || "Pelajar PAB";
+
+  document.getElementById("pabProfileEmail").textContent =
+    "Email: " + user.email;
+}
+
+  async function saveProfile(user){
+    const name =
+      user.user_metadata?.display_name || "Pelajar PAB";
+
+    const {data, error} = await client
+      .from("profiles")
+      .select("id, display_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if(error) throw error;
+
+    if(!data){
+      const {error: insertError} = await client
+        .from("profiles")
+        .insert({
+          id:user.id,
+          display_name:name
+        });
+
+      if(insertError) throw insertError;
+      return name;
+    }
+
+    return data.display_name || name;
+  }
+
+  document.getElementById("pabAccountButton")
+    .onclick = async function(){
+      panel.style.display = "flex";
+      showMessage("");
+
+      if(!client){
+        showMessage("Koneksi Supabase belum tersedia.");
+        return;
+      }
+
+      const {data} = await client.auth.getUser();
+
+      if(data.user){
+        try {
+          const name = await saveProfile(data.user);
+          showProfile(data.user, name);
+        } catch(error) {
+          showMessage(error.message);
+        }
+      }
+    };
+
+  document.getElementById("pabClose").onclick = function(){
+    panel.style.display = "none";
+  };
+
+  document.getElementById("pabSignup").onclick = async function(){
+    if(!client) return showMessage("Koneksi belum tersedia.");
+
+    const name = document.getElementById("pabName").value.trim();
+    const email = document.getElementById("pabEmail").value.trim();
+    const password = document.getElementById("pabPassword").value;
+
+    if(!email || password.length < 6){
+      return showMessage("Isi email dan password minimal 6 karakter.");
+    }
+
+    showMessage("Sedang membuat akun...");
+
+    const {data, error} = await client.auth.signUp({
+      email,
+      password,
+      options:{
+        data:{display_name:name || "Pelajar PAB"}
+      }
+    });
+
+    if(error) return showMessage(error.message);
+
+    if(data.session){
+      try {
+        const savedName = await saveProfile(data.user);
+        showProfile(data.user, savedName);
+        showMessage("Akun berhasil dibuat!");
+      } catch(error) {
+        showMessage(error.message);
+      }
+    } else {
+      showMessage("Pendaftaran berhasil! Periksa email untuk konfirmasi sebelum login.");
+    }
+  };
+
+  document.getElementById("pabLogin").onclick = async function(){
+    if(!client) return showMessage("Koneksi belum tersedia.");
+
+    const email = document.getElementById("pabEmail").value.trim();
+    const password = document.getElementById("pabPassword").value;
+
+    showMessage("Sedang login...");
+
+    const {data, error} = await client.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if(error) return showMessage(error.message);
+
+    try {
+      const name = await saveProfile(data.user);
+      showProfile(data.user, name);
+      showMessage("Login berhasil!");
+    } catch(error) {
+      showMessage(error.message);
+    }
+  };
+
+ 
+ document.getElementById("pabSaveName").onclick=async function(){
+  const newName=document.getElementById("pabEditName").value.trim();
+
+  if(!newName){
+    return showMessage("Nama tidak boleh kosong.");
+  }
+
+  showMessage("Menyimpan perubahan...");
+
+  const {data,error}=await client.auth.getUser();
+
+  if(error || !data.user){
+    return showMessage("Silakan login kembali.");
+  }
+
+  const {error:updateError}=await client
+    .from("profiles")
+    .update({display_name:newName,updated_at:new Date().toISOString()})
+    .eq("id",data.user.id);
+
+  if(updateError){
+    return showMessage("Gagal menyimpan: "+updateError.message);
+  }
+
+  const {error:metaError}=await client.auth.updateUser({
+    data:{display_name:newName}
+  });
+
+  if(metaError){
+    return showMessage("Nama tersimpan di profil, tetapi gagal memperbarui akun.");
+  }
+
+  showMessage("Nama profil berhasil diperbarui! 🎉");
+}; document.getElementById("pabLogout").onclick = async function(){
+    const {error} = await client.auth.signOut();
+
+    if(error) return showMessage(error.message);
+
+    profile.style.display = "none";
+    form.style.display = "block";
+    showMessage("Kamu berhasil logout.");
+  };
+})();
 </script>
 </body>
 </html>
