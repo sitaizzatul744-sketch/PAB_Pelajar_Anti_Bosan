@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAB | Pelajar Anti Bosan</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f5ff;color:#252747;font-family:Arial,sans-serif;padding-bottom:78px}
+header{padding:25px 20px 28px;background:linear-gradient(135deg,#5145bd,#9275f5);color:white;border-radius:0 0 26px 26px}
+header h1{font-size:29px;margin:0}
+header p{margin:8px 0 0;font-size:14px}
+main{max-width:650px;margin:auto;padding:16px}
+.page{display:none}
+.page.active{display:block}
+.card{background:white;padding:17px;border-radius:17px;margin-bottom:15px;box-shadow:0 3px 14px #3333330c}
+h2{font-size:20px;margin:3px 0 14px}
+h3{font-size:16px;margin:8px 0}
+p{line-height:1.5}
+label{display:block;font-size:13px;font-weight:bold;margin-top:10px}
+select,input{width:100%;padding:12px;margin:7px 0 10px;border:1px solid #d9d9e8;border-radius:10px;background:white;font-size:14px}
+button{border:0;border-radius:11px;padding:12px 15px;background:#6558cf;color:white;font-weight:bold;font-size:14px;cursor:pointer}
+button:disabled{opacity:.5}
+.primary{width:100%;margin-top:8px}
+.secondary{background:#eceaff;color:#5145bd}
+.option{display:block;width:100%;text-align:left;margin:9px 0;background:#f0efff;color:#292747;border:1px solid #e4e1ff}
+.option.selected{background:#dedaff;border-color:#6558cf}
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:white;box-shadow:0 -3px 15px #2222;padding:8px 2px;z-index:5}
+.nav button{flex:1;background:transparent;color:#777;font-size:11px;padding:7px 1px}
+.nav button.active{color:#6558cf}
+.hidden{display:none!important}
+.small{font-size:12px;color:#777}
+.result{background:#eff8f1;padding:12px;border-radius:10px;margin-top:12px}
+.progress{height:8px;background:#e8e7f3;border-radius:10px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:#6558cf;width:0}
+.badge{display:inline-block;background:#eeeaff;color:#5145bd;padding:6px 10px;border-radius:20px;font-size:12px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🎓 PAB</h1>
+<p>Pelajar Anti Bosan — Belajar Seru, Prestasi Maju!</p>
+</header>
+
+<main>
+<section id="home" class="page active">
+<div class="card">
+<h2>Halo, Pelajar! 👋</h2>
+<p>Selamat datang di PAB. Belajar tidak harus membosankan. Yuk, belajar sambil bermain!</p>
+<span class="badge">Belajar • Bermain • Berprestasi</span>
+</div>
+<div class="card">
+<h3>📚 Siap menguji kemampuanmu?</h3>
+<p>Pilih jenjang pendidikan dan kerjakan kuis sesuai pelajaran atau jurusanmu.</p>
+<button class="primary" onclick="showPage('quiz')">Mulai Kuis</button>
+</div>
+<div class="card">
+<h3>🎮 Belajar sambil bermain</h3>
+<p>Asah kemampuanmu melalui permainan edukasi.</p>
+<button class="primary" onclick="showPage('game')">Buka Game</button>
+</div>
+<div class="card">
+<h3>🌟 Tentang PAB</h3>
+<p>PAB merupakan ruang belajar menyenangkan bagi pelajar SD, SMP, SMA, dan SMK.</p>
+</div>
+</section>
+
+<section id="quiz" class="page">
+<div class="card">
+<h2>📝 Kuis PAB</h2>
+<label>Jenjang pendidikan</label>
+<select id="level" onchange="updateClasses()">
+<option value="">Pilih jenjang</option>
+<option value="SD">SD</option>
+<option value="SMP">SMP</option>
+<option value="SMA">SMA</option>
+<option value="SMK">SMK</option>
+</select>
+
+<label>Kelas</label>
+<select id="grade"><option value="">Pilih kelas</option></select>
+
+<div id="majorBox" class="hidden">
+<label>Jurusan SMK</label>
+<select id="major"><option value="">Pilih jurusan</option></select>
+</div>
+
+<label>Mata pelajaran</label>
+<select id="subject"><option value="">Pilih mata pelajaran</option></select>
+
+<button class="primary" onclick="startQuiz()">Mulai Kuis</button>
+</div>
+<div id="quizArea" class="card hidden"></div>
+</section>
+
+<section id="game" class="page">
+<div class="card">
+<h2>🎮 Game Edukasi</h2>
+<h3>Tebak Angka</h3>
+<p class="small">Tebak angka dari 1 sampai 10.</p>
+<input id="guess" type="number" min="1" max="10" placeholder="Masukkan tebakan">
+<button onclick="playGuess()">Periksa</button>
+<p id="guessResult"></p>
+</div>
+<div class="card">
+<h3>✖️ Tantangan Perkalian</h3>
+<p id="mathQuestion">Tekan soal baru untuk memulai.</p>
+<input id="mathAnswer" type="number" placeholder="Jawabanmu">
+<button onclick="newMath()">Soal Baru</button>
+<button class="secondary" onclick="checkMath()">Periksa Jawaban</button>
+<p id="mathResult"></p>
+</div>
+</section>
+
+<section id="study" class="page">
+<div class="card">
+<h2>📖 Ruang Belajar</h2>
+<p>Persiapkan dirimu sebelum mengerjakan kuis. Pilih jenjang dan pelajaran pada menu Kuis untuk memulai latihan.</p>
+</div>
+</section>
+
+<section id="profile" class="page">
+<div class="card">
+<h2>👤 Profil Pelajar</h2>
+<label>Nama pelajar</label>
+<input id="studentName" placeholder="Masukkan nama">
+<button onclick="saveProfile()">Simpan Profil</button>
+<p id="profileResult"></p>
+</div>
+<div class="card">
+<h3>🏆 Rekap Belajar</h3>
+<p id="totalScore">Total skor: 0</p>
+<p id="quizCount">Kuis selesai: 0</p>
+</div>
+</section>
+</main>
+
+<nav class="nav">
+<button class="active" onclick="showPage('home',this)">🏠<br>Beranda</button>
+<button onclick="showPage('quiz',this)">📝<br>Kuis</button>
+<button onclick="showPage('game',this)">🎮<br>Game</button>
+<button onclick="showPage('study',this)">📖<br>Belajar</button>
+<button onclick="showPage('profile',this)">👤<br>Profil</button>
+</nav>
+
+<script>
+
+const grades = {
+  SD:["1","2","3","4","5","6"],
+  SMP:["7","8","9"],
+  SMA:["10","11","12"],
+  SMK:["10","11","12"]
+};
+
+const subjects = {
+  SD:["Matematika","Bahasa Indonesia","Bahasa Inggris","IPAS","Pendidikan Pancasila"],
+  SMP:["Matematika","IPA","IPS","Bahasa Indonesia","Bahasa Inggris","Informatika","Pendidikan Pancasila"],
+  SMA:["Matematika","Fisika","Kimia","Biologi","Ekonomi","Geografi","Sejarah","Sosiologi","Bahasa Indonesia","Bahasa Inggris","Informatika"],
+  SMK:["Matematika","Bahasa Indonesia","Bahasa Inggris","Informatika","Projek Kreatif dan Kewirausahaan","Pendidikan Pancasila"]
+};
+
+const majors = [
+"Rekayasa Perangkat Lunak (RPL)",
+"Teknik Komputer dan Jaringan (TKJ)",
+"Desain Komunikasi Visual (DKV)",
+"Akuntansi",
+"Manajemen Perkantoran",
+"Bisnis Digital",
+"Pemasaran",
+"Teknik Kendaraan Ringan",
+"Teknik Sepeda Motor",
+"Teknik Mesin",
+"Teknik Elektronika",
+"Teknik Otomasi Industri (TOI)",
+"Nautika Kapal Niaga",
+"Teknika Kapal Niaga",
+"Nautika Kapal Penangkap Ikan (NKPI)",
+"Agribisnis Perikanan Air Payau dan Laut (APAPL)",
+"Agribisnis Pengolahan Hasil Perikanan (APHPI)",
+"Perhotelan",
+"Kuliner",
+"Tata Busana",
+"Tata Kecantikan"
+];
+
+function showPage(id,btn){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+  else {
+    const buttons=[...document.querySelectorAll(".nav button")];
+    const index=["home","quiz","game","study","profile"].indexOf(id);
+    if(index>=0) buttons[index].classList.add("active");
+  }
+}
+
+function updateClasses(){
+  const level=document.getElementById("level").value;
+  const grade=document.getElementById("grade");
+  const subject=document.getElementById("subject");
+  const majorBox=document.getElementById("majorBox");
+  const major=document.getElementById("major");
+
+  grade.innerHTML='<option value="">Pilih kelas</option>';
+  subject.innerHTML='<option value="">Pilih mata pelajaran</option>';
+  major.innerHTML='<option value="">Pilih jurusan</option>';
+
+  if(!level) {
+    majorBox.classList.add("hidden");
+    return;
+  }
+
+  grades[level].forEach(g=>{
+    grade.innerHTML+=`<option value="${g}">Kelas ${g}</option>`;
+  });
+
+  subjects[level].forEach(s=>{
+    subject.innerHTML+=`<option value="${s}">${s}</option>`;
+  });
+
+  if(level==="SMK"){
+    majorBox.classList.remove("hidden");
+    majors.forEach(m=>{
+      major.innerHTML+=`<option value="${m}">${m}</option>`;
+    });
+  }else{
+    majorBox.classList.add("hidden");
+  }
+}
+
+const generalBanks = {
+"Matematika": [
+["Hasil dari 25 + 17 adalah ...",["40","42","43","45"],1,"25 + 17 = 42."],
+["Hasil dari 8 × 7 adalah ...",["54","56","58","64"],1,"8 × 7 = 56."],
+["Hasil dari 144 ÷ 12 adalah ...",["10","11","12","14"],2,"144 ÷ 12 = 12."],
+["Hasil dari 3² adalah ...",["6","8","9","12"],2,"3² = 3 × 3 = 9."],
+["Bentuk pecahan dari 0,5 adalah ...",["1/2","1/3","1/4","2/3"],0,"0,5 sama dengan 1/2."],
+["Keliling persegi dengan sisi 6 cm adalah ...",["12 cm","18 cm","24 cm","36 cm"],2,"Keliling = 4 × 6 = 24 cm."],
+["Luas persegi panjang dengan panjang 8 cm dan lebar 4 cm adalah ...",["12 cm²","24 cm²","32 cm²","36 cm²"],2,"Luas = 8 × 4 = 32 cm²."],
+["Hasil dari ¾ + ¼ adalah ...",["½","1","1¼","2"],1,"¾ + ¼ = 4/4 = 1."],
+["Jika x + 5 = 12, nilai x adalah ...",["5","6","7","8"],2,"x = 12 - 5 = 7."],
+["Rata-rata dari 6, 8, dan 10 adalah ...",["7","8","9","10"],1,"(6 + 8 + 10) ÷ 3 = 8."]
+],
+
+"Bahasa Indonesia": [
+["Gagasan utama dalam sebuah paragraf disebut ...",["Kalimat penjelas","Ide pokok","Kata penghubung","Kesimpulan"],1,"Ide pokok merupakan inti pembahasan paragraf."],
+["Teks yang berisi langkah-langkah melakukan sesuatu disebut ...",["Narasi","Prosedur","Deskripsi","Eksposisi"],1,"Teks prosedur menjelaskan tahapan melakukan sesuatu."],
+["Sinonim kata 'cermat' adalah ...",["Teliti","Lalai","Lambat","Ragu"],0,"Cermat memiliki arti teliti."],
+["Antonim kata 'hemat' adalah ...",["Irit","Sederhana","Boros","Bijak"],2,"Boros merupakan lawan kata hemat."],
+["Kalimat tanya diakhiri dengan tanda ...",["Titik","Koma","Tanya","Seru"],2,"Kalimat tanya menggunakan tanda tanya."],
+["Tokoh yang menjadi pusat cerita disebut ...",["Tokoh utama","Tokoh tambahan","Figuran","Narator"],0,"Tokoh utama memiliki peran penting dalam cerita."],
+["Teks yang menggambarkan objek secara rinci disebut ...",["Deskripsi","Prosedur","Persuasi","Laporan"],0,"Teks deskripsi menggambarkan objek secara terperinci."],
+["Kata baku yang benar adalah ...",["Apotik","Apotek","Apotick","Apoték"],1,"Bentuk baku adalah apotek."],
+["Bagian akhir teks yang berisi rangkuman disebut ...",["Orientasi","Konflik","Penutup","Komplikasi"],2,"Penutup mengakhiri teks."],
+["Kalimat efektif adalah kalimat yang ...",["Bertele-tele","Jelas dan hemat kata","Tidak memiliki subjek","Selalu panjang"],1,"Kalimat efektif menyampaikan pesan dengan jelas."]
+],
+
+"Bahasa Inggris": [
+["What is the meaning of 'book'?",["Meja","Buku","Kursi","Pintu"],1,"Book means buku."],
+["The correct plural form of 'child' is ...",["Childs","Childes","Children","Childrens"],2,"The plural form is children."],
+["She ... a student.",["Am","Are","Is","Be"],2,"She uses the verb is."],
+["The opposite of 'big' is ...",["Large","Small","Tall","Long"],1,"Small means kecil."],
+["What is the past form of 'go'?",["Goed","Gone","Going","Went"],3,"The simple past form is went."],
+["'Good morning' is used in the ...",["Morning","Afternoon","Evening","Night"],0,"Good morning is used in the morning."],
+["They ... football every Sunday.",["Plays","Play","Playing","Played"],1,"They use the base verb play."],
+["What does 'beautiful' mean?",["Cantik","Sedih","Marah","Cepat"],0,"Beautiful means cantik atau indah."],
+["The correct sentence is ...",["He are happy","He am happy","He is happy","He be happy"],2,"He is happy is grammatically correct."],
+["What is the meaning of 'library'?",["Rumah sakit","Perpustakaan","Pasar","Kantor"],1,"Library means perpustakaan."]
+],
+
+"Informatika": [
+["Komponen komputer yang menjalankan instruksi program adalah ...",["CPU","Monitor","Keyboard","Speaker"],0,"CPU memproses instruksi komputer."],
+["Perangkat untuk memasukkan teks adalah ...",["Monitor","Keyboard","Printer","Speaker"],1,"Keyboard digunakan untuk memasukkan teks."],
+["Perangkat lunak disebut juga ...",["Hardware","Software","Brainware","Network"],1,"Software adalah perangkat lunak."],
+["Kepanjangan CPU adalah ...",["Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing User"],0,"CPU adalah Central Processing Unit."],
+["Aplikasi untuk menjelajahi internet disebut ...",["Browser","Calculator","Paint","Notepad"],0,"Browser digunakan untuk membuka halaman web."],
+["Simbol komentar satu baris dalam C++ adalah ...",["//","##","**","%%"],0,"Dua garis miring digunakan untuk komentar satu baris."],
+["Bilangan biner menggunakan angka ...",["0 dan 1","1 dan 2","0 sampai 9","2 dan 3"],0,"Sistem biner menggunakan digit 0 dan 1."],
+["Perangkat untuk mencetak dokumen adalah ...",["Scanner","Printer","Mouse","Router"],1,"Printer menghasilkan cetakan dokumen."],
+["Perlindungan informasi dari akses tidak sah disebut ...",["Dekorasi","Keamanan data","Kompresi","Pemformatan"],1,"Keamanan data melindungi informasi."],
+["Jaringan komputer dengan cakupan geografis luas disebut ...",["LAN","PAN","WAN","USB"],2,"WAN mencakup wilayah geografis yang luas."]
+],
+
+"Pendidikan Pancasila": [
+["Dasar negara Indonesia adalah ...",["UUD 1945","Pancasila","Bhinneka Tunggal Ika","Proklamasi"],1,"Pancasila merupakan dasar negara Indonesia."],
+["Lambang sila pertama Pancasila adalah ...",["Bintang","Rantai","Pohon beringin","Kepala banteng"],0,"Bintang melambangkan sila pertama."],
+["Semboyan bangsa Indonesia adalah ...",["Tut Wuri Handayani","Bhinneka Tunggal Ika","Ing Ngarsa Sung Tuladha","Merdeka Belajar"],1,"Artinya berbeda-beda tetapi tetap satu."],
+["Musyawarah bertujuan mencapai ...",["Pertengkaran","Mufakat","Persaingan","Perpecahan"],1,"Musyawarah dilakukan untuk mencapai kesepakatan."],
+["Contoh sikap toleransi adalah ...",["Menghina perbedaan","Memaksakan pendapat","Menghormati orang lain","Menolak berteman"],2,"Toleransi berarti menghargai perbedaan."],
+["Undang-Undang Dasar negara Indonesia adalah ...",["UUD 1945","UUD 1950","UUD 1965","UUD 2000"],0,"Konstitusi Indonesia adalah UUD 1945."],
+["Pemilihan pemimpin melalui pemungutan suara disebut ...",["Pemilu","Gotong royong","Upacara","Diskusi"],0,"Pemilu merupakan sarana kedaulatan rakyat."],
+["Sila ketiga Pancasila berbunyi ...",["Ketuhanan Yang Maha Esa","Persatuan Indonesia","Keadilan Sosial","Kemanusiaan yang Adil dan Beradab"],1,"Sila ketiga menekankan persatuan bangsa."],
+["Contoh kewajiban siswa adalah ...",["Mendapat nilai","Menggunakan fasilitas","Mematuhi tata tertib","Menerima pelajaran"],2,"Siswa wajib menaati aturan sekolah."],
+["Keputusan bersama sebaiknya dilaksanakan dengan ...",["Terpaksa","Tanggung jawab","Mengabaikan hasil","Menyalahkan orang lain"],1,"Kesepakatan harus dilaksanakan dengan tanggung jawab."]
+],
+
+"IPA": [
+["Organ tubuh yang memompa darah adalah ...",["Paru-paru","Jantung","Ginjal","Lambung"],1,"Jantung memompa darah ke seluruh tubuh."],
+["Proses tumbuhan membuat makanan disebut ...",["Respirasi","Fotosintesis","Adaptasi","Transpirasi"],1,"Fotosintesis menggunakan energi cahaya."],
+["Planet tempat manusia tinggal adalah ...",["Mars","Venus","Bumi","Jupiter"],2,"Bumi merupakan tempat tinggal manusia."],
+["Satuan gaya dalam SI adalah ...",["Joule","Watt","Newton","Meter"],2,"Gaya diukur dalam newton."],
+["Perubahan cair menjadi gas disebut ...",["Membeku","Menguap","Mengembun","Mencair"],1,"Menguap adalah perubahan cair menjadi gas."],
+["Sumber energi utama bagi Bumi adalah ...",["Bulan","Matahari","Angin","Batu"],1,"Matahari menyediakan cahaya dan panas."],
+["Organ pernapasan utama manusia adalah ...",["Jantung","Paru-paru","Hati","Usus"],1,"Paru-paru merupakan organ utama pernapasan."],
+["Hewan pemakan tumbuhan disebut ...",["Karnivora","Herbivora","Omnivora","Insektivora"],1,"Herbivora memakan tumbuhan."],
+["Benda penghantar listrik yang baik disebut ...",["Isolator","Konduktor","Resistor","Generator"],1,"Konduktor menghantarkan arus listrik."],
+["Gaya yang menyebabkan benda jatuh ke Bumi adalah ...",["Gesek","Magnet","Gravitasi","Pegas"],2,"Gravitasi menarik benda menuju pusat Bumi."]
+],
+
+"IPS": [
+["Kegiatan menghasilkan barang atau jasa disebut ...",["Konsumsi","Produksi","Distribusi","Investasi"],1,"Produksi menghasilkan barang atau jasa."],
+["Orang yang menggunakan barang atau jasa disebut ...",["Produsen","Distributor","Konsumen","Eksportir"],2,"Konsumen menggunakan barang atau jasa."],
+["Benua terbesar di dunia adalah ...",["Afrika","Asia","Eropa","Australia"],1,"Asia merupakan benua terluas."],
+["Penyaluran barang dari produsen ke konsumen disebut ...",["Produksi","Distribusi","Konsumsi","Promosi"],1,"Distribusi menyalurkan barang."],
+["Garis yang membagi Bumi menjadi belahan utara dan selatan adalah ...",["Garis bujur","Khatulistiwa","Garis tanggal","Garis lintang 90°"],1,"Khatulistiwa membagi Bumi menjadi dua belahan."],
+["Organisasi negara-negara Asia Tenggara adalah ...",["PBB","ASEAN","OPEC","APEC"],1,"ASEAN merupakan organisasi regional Asia Tenggara."],
+["Jual beli antara dua negara disebut ...",["Perdagangan internasional","Perdagangan lokal","Barter","Konsumsi"],0,"Perdagangan internasional berlangsung antarnegara."],
+["Peta digunakan untuk ...",["Mengukur suhu","Menggambarkan permukaan Bumi","Menghitung waktu","Menghasilkan listrik"],1,"Peta menggambarkan wilayah di permukaan Bumi."],
+["Proklamasi kemerdekaan Indonesia dibacakan pada ...",["17 Agustus 1945","20 Mei 1908","28 Oktober 1928","10 November 1945"],0,"Indonesia merdeka pada 17 Agustus 1945."],
+["Kegiatan manusia untuk memenuhi kebutuhan disebut ...",["Kegiatan ekonomi","Kegiatan olahraga","Kegiatan hiburan","Kegiatan seni"],0,"Kegiatan ekonomi mencakup produksi, distribusi, dan konsumsi."]
+]
+};
+
+function convertBank(bank){
+  return bank.map(item=>({
+    q:item[0],
+    a:item[1],
+    c:item[2],
+    e:item[3]
+  }));
+}
+
+
+const vocationalBanks = {
+
+"Rekayasa Perangkat Lunak (RPL)": [
+["HTML digunakan untuk ...",["Membuat struktur halaman web","Mengedit suara","Mengatur jaringan","Mengolah angka"],0,"HTML menyusun struktur halaman web."],
+["CSS berfungsi untuk ...",["Mengatur tampilan web","Menyimpan database","Membuat jaringan","Menghapus file"],0,"CSS mengatur warna, ukuran, dan tata letak."],
+["JavaScript digunakan untuk ...",["Menambahkan interaksi web","Mencetak dokumen","Mengatur listrik","Membuat kabel"],0,"JavaScript membuat halaman web interaktif."],
+["Perintah untuk menampilkan teks di C++ adalah ...",["cout","cin","int","return"],0,"cout digunakan untuk menampilkan keluaran."],
+["Variabel digunakan untuk ...",["Menyimpan data","Menghapus komputer","Mencetak gambar","Mengatur kabel"],0,"Variabel menyimpan nilai dalam program."],
+["Kesalahan penulisan kode disebut ...",["Syntax error","Hardware","Output","Database"],0,"Syntax error terjadi karena aturan penulisan kode dilanggar."],
+["Database digunakan untuk ...",["Menyimpan data terstruktur","Mengedit foto","Memutar musik","Mengisi baterai"],0,"Database menyimpan dan mengelola data."],
+["Git berguna untuk ...",["Mengelola versi kode","Menggambar logo","Mengatur listrik","Membuat animasi saja"],0,"Git melacak perubahan kode."],
+["Algoritma adalah ...",["Langkah sistematis menyelesaikan masalah","Bahasa perangkat keras","Jenis monitor","Kabel komputer"],0,"Algoritma berisi langkah penyelesaian masalah."],
+["Pengujian perangkat lunak bertujuan untuk ...",["Menemukan kesalahan","Menghapus semua data","Mematikan server","Mengganti keyboard"],0,"Testing membantu memastikan program bekerja dengan benar."]
+],
+
+"Teknik Komputer dan Jaringan (TKJ)": [
+["Perangkat yang menghubungkan beberapa jaringan adalah ...",["Router","Keyboard","Printer","Speaker"],0,"Router meneruskan paket antarjaringan."],
+["LAN merupakan singkatan dari ...",["Local Area Network","Large Access Number","Long Area Node","Local Analog Network"],0,"LAN adalah jaringan area lokal."],
+["Alamat IP digunakan untuk ...",["Identitas perangkat dalam jaringan","Mengatur warna layar","Mencetak dokumen","Menyimpan baterai"],0,"IP mengidentifikasi perangkat di jaringan."],
+["Perangkat untuk menghubungkan banyak komputer dalam LAN adalah ...",["Switch","Scanner","Proyektor","Mikrofon"],0,"Switch menghubungkan perangkat dalam jaringan lokal."],
+["Kabel UTP umumnya digunakan untuk ...",["Jaringan Ethernet","Mengisi air","Audio panggung","Antena televisi saja"],0,"UTP umum digunakan pada jaringan Ethernet."],
+["DNS berfungsi untuk ...",["Menerjemahkan nama domain ke alamat IP","Mengisi daya komputer","Menghapus virus secara otomatis","Mengatur kecerahan"],0,"DNS membantu menemukan alamat IP dari nama domain."],
+["Topologi jaringan berbentuk pusat dan cabang disebut ...",["Star","Bus","Ring","Mesh"],0,"Topologi star memakai perangkat pusat."],
+["Perintah ping digunakan untuk ...",["Menguji konektivitas jaringan","Mengedit gambar","Membuat dokumen","Mengatur suara"],0,"Ping memeriksa keterjangkauan perangkat jaringan."],
+["Firewall berfungsi untuk ...",["Menyaring lalu lintas jaringan","Mempercepat kipas","Mencetak data","Menyimpan foto"],0,"Firewall membantu mengendalikan lalu lintas jaringan."],
+["Modem berfungsi untuk ...",["Mengubah sinyal agar perangkat dapat terhubung ke jaringan","Mendinginkan CPU","Mencetak dokumen","Mengatur ukuran layar"],0,"Modem melakukan modulasi dan demodulasi sinyal."]
+],
+
+"Desain Komunikasi Visual (DKV)": [
+["Prinsip keseimbangan dalam desain disebut ...",["Balance","Contrast","Texture","Noise"],0,"Balance mengatur keseimbangan unsur visual."],
+["RGB merupakan model warna yang digunakan terutama untuk ...",["Layar digital","Cetak koran saja","Ukiran kayu","Kain tenun"],0,"RGB digunakan pada tampilan digital."],
+["CMYK umumnya digunakan untuk ...",["Percetakan","Audio digital","Pemrograman","Jaringan internet"],0,"CMYK merupakan model warna untuk proses cetak."],
+["Tipografi berkaitan dengan ...",["Pengaturan huruf","Pengaturan kabel","Pengolahan suara","Perakitan mesin"],0,"Tipografi membahas bentuk dan penataan huruf."],
+["Storyboard digunakan untuk ...",["Merencanakan urutan adegan","Menghitung biaya listrik","Menyimpan database","Menguji jaringan"],0,"Storyboard menggambarkan urutan visual."],
+["Resolusi gambar biasanya dinyatakan dalam ...",["Piksel","Liter","Kilogram","Volt"],0,"Resolusi digital berkaitan dengan jumlah piksel."],
+["Logo yang baik seharusnya ...",["Mudah dikenali","Selalu sangat rumit","Sulit dibaca","Memiliki banyak warna tanpa tujuan"],0,"Logo perlu mudah dikenali dan sesuai identitas."],
+["Komposisi adalah ...",["Penataan unsur dalam desain","Jenis kabel komputer","Ukuran baterai","Teknik memasak"],0,"Komposisi mengatur hubungan antarunsur visual."],
+["Kontras dalam desain berguna untuk ...",["Membedakan dan menonjolkan elemen","Menghilangkan semua warna","Mengurangi keterbacaan","Menghapus gambar"],0,"Kontras membantu elemen penting terlihat jelas."],
+["Mockup merupakan ...",["Gambaran penerapan desain pada media","File suara","Jenis mesin cetak","Bahasa pemrograman"],0,"Mockup memperlihatkan simulasi tampilan desain."]
+],
+
+"Akuntansi": [
+["Persamaan dasar akuntansi adalah ...",["Aset = Liabilitas + Ekuitas","Aset = Beban + Pendapatan","Kas = Utang - Modal","Modal = Aset + Beban"],0,"Persamaan dasar menunjukkan keseimbangan aset, kewajiban, dan ekuitas."],
+["Bukti transaksi pembelian tunai dapat berupa ...",["Kuitansi","Kartu pelajar","Surat undangan","Jadwal kelas"],0,"Kuitansi menjadi bukti penerimaan pembayaran."],
+["Laporan yang menunjukkan posisi keuangan disebut ...",["Neraca","Laporan jadwal","Daftar hadir","Surat pesanan"],0,"Neraca menyajikan aset, liabilitas, dan ekuitas."],
+["Uang yang diterima perusahaan dari penjualan disebut ...",["Pendapatan","Beban","Utang","Prive"],0,"Penjualan menghasilkan pendapatan."],
+["Pembelian perlengkapan secara tunai menyebabkan ...",["Kas berkurang dan perlengkapan bertambah","Kas bertambah dan utang berkurang","Modal selalu bertambah","Pendapatan bertambah"],0,"Transaksi menukar kas dengan perlengkapan."],
+["Jurnal umum digunakan untuk ...",["Mencatat transaksi","Mendesain poster","Mengatur jaringan","Menghitung luas"],0,"Jurnal umum mencatat transaksi secara kronologis."],
+["Pihak yang memiliki kewajiban kepada perusahaan disebut ...",["Debitur","Kreditur","Investor saja","Konsumen saja"],0,"Debitur memiliki kewajiban membayar utang."],
+["Penyusutan aset tetap disebut ...",["Depresiasi","Distribusi","Promosi","Konsumsi"],0,"Depresiasi mengalokasikan biaya aset selama masa manfaatnya."],
+["Laporan laba rugi menyajikan ...",["Pendapatan dan beban","Daftar karyawan saja","Daftar aset pribadi","Jadwal produksi"],0,"Laporan laba rugi menunjukkan hasil usaha."],
+["Saldo normal akun kas adalah ...",["Debit","Kredit","Tidak memiliki saldo","Selalu nol"],0,"Kas termasuk akun aset dengan saldo normal debit."]
+],
+
+"Manajemen Perkantoran": [
+["Surat resmi dari organisasi disebut ...",["Surat dinas","Surat pribadi","Catatan harian","Pesan rahasia"],0,"Surat dinas digunakan untuk kepentingan resmi."],
+["Kegiatan mencatat dan mengelola surat masuk disebut ...",["Administrasi surat","Produksi barang","Pemasaran","Distribusi"],0,"Administrasi surat mengatur pencatatan dan alur surat."],
+["Arsip disimpan agar ...",["Mudah ditemukan kembali","Cepat rusak","Sulit dicari","Tidak dapat dibaca"],0,"Arsip membantu penyimpanan informasi."],
+["Aplikasi yang umum digunakan untuk membuat surat adalah ...",["Pengolah kata","Pemutar musik","Kalkulator saja","Browser saja"],0,"Pengolah kata membantu membuat dan mengedit surat."],
+["Notulen merupakan catatan ...",["Jalannya rapat","Daftar belanja pribadi","Hasil pertandingan saja","Data cuaca"],0,"Notulen mencatat pembahasan dan hasil rapat."],
+["Etika menerima telepon kantor adalah ...",["Berbicara sopan dan jelas","Memutus telepon langsung","Berteriak","Mengabaikan penelepon"],0,"Komunikasi profesional harus sopan dan jelas."],
+["Agenda kerja berfungsi untuk ...",["Mengatur jadwal kegiatan","Menghapus arsip","Mencetak foto","Mengganti perangkat"],0,"Agenda membantu mengelola waktu dan tugas."],
+["Dokumen rahasia sebaiknya ...",["Dijaga aksesnya","Dibagikan ke semua orang","Ditinggalkan terbuka","Dibuang sembarangan"],0,"Kerahasiaan dokumen perlu dijaga."],
+["Lembar yang berisi daftar hadir rapat disebut ...",["Daftar hadir","Neraca","Faktur","Kuitansi"],0,"Daftar hadir mencatat peserta yang datang."],
+["Pelayanan prima mengutamakan ...",["Kebutuhan dan kepuasan pengguna layanan","Keinginan mengabaikan pelanggan","Penundaan layanan","Informasi yang tidak jelas"],0,"Pelayanan prima berorientasi pada kualitas layanan."]
+],
+
+"Bisnis Digital": [
+["Marketplace merupakan ...",["Platform jual beli daring","Mesin produksi","Alat ukur listrik","Jenis kendaraan"],0,"Marketplace mempertemukan penjual dan pembeli secara online."],
+["SEO adalah singkatan dari ...",["Search Engine Optimization","Social Email Operation","System Entry Online","Search Event Office"],0,"SEO membantu meningkatkan visibilitas situs di mesin pencari."],
+["Target pasar berarti ...",["Kelompok konsumen yang dituju","Jumlah komputer","Jenis kemasan","Lokasi gudang saja"],0,"Target pasar adalah calon konsumen yang menjadi sasaran."],
+["Konten pemasaran digital dapat berupa ...",["Video dan gambar promosi","Kabel jaringan","Buku kas saja","Komponen mesin"],0,"Konten digital dapat berbentuk teks, gambar, atau video."],
+["Call to action (CTA) bertujuan untuk ...",["Mengajak audiens melakukan tindakan","Menghapus akun","Mematikan internet","Mengganti perangkat"],0,"CTA mengarahkan audiens pada tindakan tertentu."],
+["Konversi dalam pemasaran digital dapat berarti ...",["Pengunjung melakukan tindakan yang diharapkan","Komputer mati","File terhapus","Jaringan terputus"],0,"Konversi dapat berupa pembelian atau pendaftaran."],
+["Analitik digital digunakan untuk ...",["Menganalisis kinerja kampanye","Membuat kabel","Memperbaiki mesin","Mengukur suhu ruangan"],0,"Analitik membantu memahami data pemasaran."],
+["Keamanan transaksi online memerlukan ...",["Perlindungan data dan verifikasi","Membagikan kata sandi","Mengabaikan pembayaran","Menggunakan tautan sembarangan"],0,"Keamanan melindungi akun dan transaksi."],
+["Branding bertujuan membangun ...",["Identitas dan citra merek","Kerusakan produk","Jaringan listrik","Daftar inventaris saja"],0,"Branding membentuk identitas merek."],
+["Customer service bertugas ...",["Membantu pelanggan","Mengabaikan keluhan","Menghapus produk","Menghentikan penjualan"],0,"Layanan pelanggan membantu menjawab kebutuhan dan masalah konsumen."]
+]
+};
+
+
+Object.assign(vocationalBanks, {
+
+"Pemasaran": [
+["Tujuan utama pemasaran adalah ...",["Memenuhi kebutuhan konsumen dan mencapai tujuan usaha","Mengurangi kualitas produk","Menghindari pelanggan","Menghentikan penjualan"],0,"Pemasaran menghubungkan produk dengan kebutuhan konsumen."],
+["Kegiatan memperkenalkan produk kepada masyarakat disebut ...",["Promosi","Produksi","Distribusi","Penyusutan"],0,"Promosi memperkenalkan produk kepada calon konsumen."],
+["Konsumen adalah orang yang ...",["Menggunakan barang atau jasa","Membuat semua produk","Mengirim barang saja","Mengatur gudang"],0,"Konsumen menggunakan barang atau jasa."],
+["Diskon merupakan ...",["Potongan harga","Biaya produksi","Pajak kendaraan","Biaya pengiriman"],0,"Diskon adalah pengurangan harga jual."],
+["Pelayanan yang baik kepada pelanggan disebut ...",["Pelayanan prima","Produksi massal","Distribusi langsung","Administrasi gudang"],0,"Pelayanan prima mengutamakan kepuasan pelanggan."],
+["Segmentasi pasar berarti ...",["Membagi pasar menjadi kelompok konsumen","Menaikkan semua harga","Menghapus produk","Mengurangi jumlah karyawan"],0,"Segmentasi mengelompokkan konsumen berdasarkan karakteristik tertentu."],
+["Display produk bertujuan untuk ...",["Menampilkan produk agar menarik perhatian","Menyembunyikan barang","Mengurangi kualitas produk","Menghapus label harga"],0,"Display yang baik membantu menarik perhatian pembeli."],
+["Bukti pembayaran setelah transaksi dapat berupa ...",["Struk","Poster","Katalog","Brosur"],0,"Struk menjadi bukti transaksi."],
+["Sikap yang tepat saat menghadapi keluhan pelanggan adalah ...",["Mendengarkan dan mencari solusi","Menyalahkan pelanggan","Mengabaikan keluhan","Berbicara kasar"],0,"Keluhan perlu ditangani secara sopan dan profesional."],
+["Riset pasar dilakukan untuk ...",["Mengetahui kebutuhan dan perilaku konsumen","Menghapus pesaing","Menghindari promosi","Mengurangi informasi produk"],0,"Riset pasar membantu memahami kondisi pasar."]
+],
+
+"Teknik Kendaraan Ringan": [
+["Komponen yang menghasilkan percikan api pada mesin bensin adalah ...",["Busi","Radiator","Aki saja","Filter udara"],0,"Busi memercikkan api untuk pembakaran campuran udara dan bahan bakar."],
+["Fungsi radiator adalah ...",["Mendinginkan cairan pendingin mesin","Mengisi bahan bakar","Mengatur suara","Menggerakkan roda"],0,"Radiator membantu melepaskan panas dari cairan pendingin."],
+["Oli mesin berfungsi untuk ...",["Melumasi komponen mesin","Menambah tekanan ban","Membersihkan kaca","Mengisi aki"],0,"Oli mengurangi gesekan dan keausan komponen."],
+["Alat untuk mengukur tekanan ban adalah ...",["Tire pressure gauge","Multimeter","Jangka sorong","Termometer"],0,"Tire pressure gauge mengukur tekanan udara ban."],
+["Aki kendaraan berfungsi untuk ...",["Menyimpan dan memasok energi listrik","Mendinginkan mesin","Menyaring udara","Mengatur suspensi"],0,"Aki memasok energi listrik untuk sistem kendaraan."],
+["Filter udara berfungsi untuk ...",["Menyaring udara yang masuk ke mesin","Menyaring oli transmisi","Mendinginkan rem","Mengisi bahan bakar"],0,"Filter udara menahan debu sebelum udara masuk mesin."],
+["Sistem rem berfungsi untuk ...",["Memperlambat dan menghentikan kendaraan","Menaikkan suhu mesin","Mengisi tangki","Mengatur lampu kabin"],0,"Rem mengendalikan kecepatan dan menghentikan kendaraan."],
+["Alat ukur listrik yang dapat mengukur tegangan adalah ...",["Multimeter","Kunci roda","Dongkrak","Obeng"],0,"Multimeter dapat mengukur tegangan listrik."],
+["Kopling pada transmisi manual berfungsi untuk ...",["Menghubungkan dan memutus tenaga mesin ke transmisi","Mengatur tekanan ban","Mendinginkan radiator","Mengisi aki"],0,"Kopling membantu perpindahan gigi."],
+["Sebelum melakukan pemeriksaan kendaraan, teknisi perlu ...",["Memastikan kendaraan dan area kerja aman","Langsung membongkar mesin","Mengabaikan prosedur","Menyalakan semua alat tanpa pemeriksaan"],0,"Keselamatan dan pemeriksaan awal harus diutamakan."]
+],
+
+"Teknik Sepeda Motor": [
+["Komponen yang menghasilkan percikan api pada mesin bensin adalah ...",["Busi","Rantai","Radiator","Kampas rem"],0,"Busi menghasilkan percikan api untuk pembakaran."],
+["Fungsi rantai sepeda motor adalah ...",["Meneruskan tenaga ke roda belakang","Mengisi aki","Mendinginkan mesin","Mengatur lampu"],0,"Rantai meneruskan putaran dari sproket depan ke belakang."],
+["Oli mesin berfungsi untuk ...",["Melumasi komponen mesin","Mengatur tekanan ban","Membersihkan helm","Mengisi bensin"],0,"Oli mengurangi gesekan antarkomponen."],
+["Alat untuk memeriksa tekanan ban adalah ...",["Tire pressure gauge","Multimeter","Tang","Kunci busi"],0,"Alat tersebut mengukur tekanan udara ban."],
+["Aki sepeda motor memasok energi ...",["Listrik","Panas saja","Mekanik saja","Kimia untuk ban"],0,"Aki menyimpan dan memasok energi listrik."],
+["Kampas rem berfungsi untuk ...",["Membantu memperlambat roda","Mengisi bahan bakar","Mengatur klep","Mendinginkan lampu"],0,"Kampas rem menghasilkan gaya gesek pada sistem pengereman."],
+["Karburator pada sistem konvensional berfungsi untuk ...",["Mencampur udara dan bahan bakar","Mengatur tekanan oli","Mengisi aki","Mendinginkan knalpot"],0,"Karburator menyiapkan campuran udara dan bahan bakar."],
+["Sistem pendingin membantu ...",["Menjaga suhu mesin","Meningkatkan tekanan ban","Mengatur klakson","Mengisi tangki"],0,"Sistem pendingin mencegah suhu mesin berlebihan."],
+["Sproket belakang terhubung dengan ...",["Roda belakang melalui sistem penggerak","Lampu depan","Setang","Knalpot"],0,"Sproket belakang meneruskan tenaga ke roda."],
+["Pemeriksaan kendaraan sebelum digunakan bertujuan untuk ...",["Memastikan kondisi kendaraan aman","Membuat kendaraan lebih berat","Mengurangi fungsi rem","Mengabaikan kerusakan"],0,"Pemeriksaan membantu menemukan masalah lebih awal."]
+],
+
+"Teknik Mesin": [
+["Alat untuk mengukur panjang dengan ketelitian lebih tinggi daripada penggaris biasa adalah ...",["Jangka sorong","Palu","Tang","Kunci pas"],0,"Jangka sorong mengukur dimensi luar, dalam, dan kedalaman."],
+["Alat untuk mengukur diameter dengan ketelitian tinggi adalah ...",["Mikrometer","Obeng","Gergaji","Pahat"],0,"Mikrometer digunakan untuk pengukuran presisi."],
+["Mesin bubut digunakan untuk ...",["Mengerjakan benda kerja berbentuk silinder","Mengecat dinding","Mencetak dokumen","Mengukur suhu"],0,"Mesin bubut memutar benda kerja untuk proses pemesinan."],
+["Gambar teknik digunakan sebagai ...",["Panduan pembuatan komponen","Pengganti alat keselamatan","Hiasan ruang kerja","Catatan keuangan"],0,"Gambar teknik menyampaikan bentuk dan ukuran komponen."],
+["Proses menghilangkan material menggunakan pahat pada mesin frais disebut ...",["Frais","Pengecatan","Pengelasan listrik","Pengecoran saja"],0,"Mesin frais menggunakan pisau berputar untuk menyayat material."],
+["Alat pelindung mata saat praktik pemesinan adalah ...",["Kacamata keselamatan","Sandal","Topi biasa","Jam tangan"],0,"Kacamata keselamatan melindungi mata dari serpihan."],
+["Satuan SI untuk gaya adalah ...",["Newton","Meter","Liter","Watt"],0,"Newton merupakan satuan gaya."],
+["Pengelasan merupakan proses ...",["Menyambungkan material","Mengukur suhu","Mengecat logam","Mengukur massa"],0,"Pengelasan menyambungkan material melalui proses penyatuan."],
+["Jangka sorong dapat digunakan untuk mengukur ...",["Diameter luar dan dalam","Kecepatan kendaraan","Tegangan listrik","Suhu ruangan"],0,"Jangka sorong memiliki rahang untuk pengukuran luar dan dalam."],
+["Sebelum menggunakan mesin produksi, siswa harus ...",["Memahami prosedur dan keselamatan kerja","Melepas pelindung mesin","Mengabaikan instruksi","Bercanda saat mesin berjalan"],0,"Penggunaan mesin harus mengikuti prosedur keselamatan."]
+],
+
+"Teknik Elektronika": [
+["Komponen yang berfungsi menyimpan muatan listrik adalah ...",["Kapasitor","Resistor","Saklar","Sekring"],0,"Kapasitor menyimpan energi dalam medan listrik."],
+["Satuan hambatan listrik adalah ...",["Ohm","Volt","Ampere","Watt"],0,"Hambatan listrik diukur dalam ohm."],
+["Komponen yang membatasi arus listrik adalah ...",["Resistor","Kapasitor","Baterai","Lampu"],0,"Resistor membatasi arus dalam rangkaian."],
+["Alat untuk mengukur tegangan listrik adalah ...",["Voltmeter","Termometer","Penggaris","Stopwatch"],0,"Voltmeter mengukur beda potensial."],
+["Dioda ideal mengalirkan arus terutama dalam ...",["Satu arah","Semua arah sama","Tidak ada arah","Dua arah secara bebas"],0,"Dioda memiliki sifat penyearah."],
+["Transistor dapat digunakan sebagai ...",["Penguat dan saklar elektronik","Pengukur panjang","Pendingin mesin","Penyimpan air"],0,"Transistor dapat memperkuat sinyal dan berfungsi sebagai saklar."],
+["Papan untuk merangkai rangkaian elektronik sementara disebut ...",["Breadboard","Keyboard","Motherboard printer","Tripod"],0,"Breadboard memudahkan perakitan rangkaian tanpa penyolderan permanen."],
+["Satuan arus listrik adalah ...",["Ampere","Ohm","Volt","Joule"],0,"Arus listrik diukur dalam ampere."],
+["LED merupakan singkatan dari ...",["Light Emitting Diode","Light Electronic Data","Low Energy Device","Linear Electric Display"],0,"LED adalah dioda yang memancarkan cahaya."],
+["Sebelum mengukur rangkaian listrik, siswa harus ...",["Memilih pengaturan dan batas ukur yang sesuai","Memegang kabel terbuka","Mengabaikan petunjuk alat","Menghubungkan alat sembarangan"],0,"Pemilihan pengaturan ukur yang benar penting untuk keselamatan dan hasil pengukuran."]
+]
+
+});
+
+
+Object.assign(vocationalBanks, {
+
+"Teknik Otomasi Industri (TOI)": [
+["PLC merupakan singkatan dari ...",["Programmable Logic Controller","Power Line Control","Personal Logic Computer","Program Light Circuit"],0,"PLC adalah pengendali yang dapat diprogram untuk otomasi industri."],
+["Sensor digunakan untuk ...",["Mendeteksi perubahan atau kondisi tertentu","Menghias mesin","Menyimpan dokumen","Mengganti semua motor"],0,"Sensor mendeteksi besaran seperti suhu, jarak, tekanan, dan posisi."],
+["Aktuator berfungsi untuk ...",["Mengubah sinyal kendali menjadi tindakan fisik","Menyimpan data saja","Mengukur panjang kabel","Menampilkan gambar"],0,"Aktuator menghasilkan gerakan atau tindakan berdasarkan sinyal kendali."],
+["Relay merupakan komponen yang berfungsi sebagai ...",["Saklar yang dikendalikan secara listrik","Alat ukur panjang","Pendingin ruangan","Penyimpan bahan bakar"],0,"Relay mengendalikan hubungan listrik menggunakan sinyal kendali."],
+["Contoh aktuator pada sistem otomasi adalah ...",["Motor listrik","Sensor suhu","Termometer","Penggaris"],0,"Motor listrik dapat menghasilkan gerakan mekanis."],
+["HMI pada sistem industri digunakan sebagai ...",["Antarmuka manusia dengan mesin","Alat pemotong logam","Pengukur massa","Sumber bahan bakar"],0,"HMI membantu operator memantau dan mengendalikan proses."],
+["Diagram ladder sering digunakan untuk pemrograman ...",["PLC","Kamera","Printer","Kalkulator"],0,"Ladder diagram merupakan salah satu bahasa pemrograman PLC."],
+["Inverter pada pengendali motor dapat digunakan untuk ...",["Mengatur kecepatan motor","Mengukur massa","Menyaring udara","Mengatur warna lampu"],0,"Inverter dapat mengatur frekuensi dan kecepatan motor."],
+["Interlock dalam sistem otomasi bertujuan untuk ...",["Mencegah kondisi operasi yang tidak aman","Mempercepat semua mesin tanpa batas","Menghapus sensor","Menonaktifkan semua alarm"],0,"Interlock membantu mencegah operasi yang tidak sesuai kondisi keselamatan."],
+["Sebelum merawat panel kontrol, teknisi harus ...",["Mengikuti prosedur isolasi energi dan keselamatan","Langsung menyentuh kabel","Mengabaikan label peringatan","Membuka panel tanpa izin"],0,"Isolasi energi dan prosedur keselamatan wajib diperhatikan."]
+],
+
+"Nautika Kapal Niaga": [
+["Tugas utama bagian nautika kapal niaga adalah ...",["Mengelola navigasi dan keselamatan pelayaran","Mengolah makanan saja","Mengatur administrasi hotel","Memperbaiki mesin kendaraan"],0,"Bagian nautika bertanggung jawab terhadap navigasi dan operasi keselamatan pelayaran."],
+["Alat untuk menunjukkan arah mata angin di kapal adalah ...",["Kompas","Termometer","Barometer","Tachometer"],0,"Kompas membantu menentukan arah."],
+["Peta laut digunakan untuk ...",["Membantu perencanaan dan pelaksanaan navigasi","Menghitung gaji awak","Mencatat menu makanan","Mengukur suhu mesin"],0,"Peta laut memuat informasi perairan untuk navigasi."],
+["Istilah haluan kapal berarti ...",["Bagian depan kapal","Bagian belakang kapal","Ruang mesin","Dasar kapal"],0,"Haluan adalah bagian depan kapal."],
+["Pengamatan keliling atau lookout bertujuan untuk ...",["Mendeteksi bahaya dan objek di sekitar kapal","Menghitung persediaan makanan","Mengukur kedalaman tangki","Mengatur jadwal tidur"],0,"Lookout membantu menjaga keselamatan navigasi."],
+["Buku catatan kegiatan pelayaran dikenal sebagai ...",["Logbook","Katalog","Invoice","Kamus"],0,"Logbook mencatat berbagai kegiatan dan kejadian selama pelayaran."],
+["Cuaca buruk di laut perlu diantisipasi dengan ...",["Memantau informasi cuaca dan mengikuti prosedur keselamatan","Mengabaikan peringatan","Meninggalkan tugas jaga","Mengubah arah tanpa koordinasi"],0,"Informasi cuaca membantu awak kapal mengambil keputusan yang aman."],
+["Alat komunikasi radio maritim digunakan untuk ...",["Komunikasi keselamatan dan operasional kapal","Mengukur suhu air","Menyaring bahan bakar","Mengukur panjang kapal"],0,"Radio maritim mendukung komunikasi kapal dan keselamatan pelayaran."],
+["Bagian belakang kapal disebut ...",["Buritan","Haluan","Geladak depan","Lunas depan"],0,"Buritan adalah bagian belakang kapal."],
+["Saat bertugas jaga navigasi, awak kapal harus ...",["Tetap waspada dan mengikuti prosedur jaga","Tidur selama bertugas","Mengabaikan instruksi","Meninggalkan anjungan tanpa izin"],0,"Kewaspadaan penting untuk mencegah kecelakaan pelayaran."]
+],
+
+"Teknika Kapal Niaga": [
+["Bagian kapal yang bertanggung jawab terhadap mesin dan permesinan adalah ...",["Bagian teknika","Bagian pemasaran","Bagian tata boga","Bagian administrasi"],0,"Bagian teknika menangani mesin dan sistem teknis kapal."],
+["Fungsi sistem pelumasan mesin adalah ...",["Mengurangi gesekan komponen","Menambah kadar garam air","Mengatur arah kapal","Mengukur kedalaman laut"],0,"Pelumasan mengurangi gesekan dan keausan."],
+["Generator kapal berfungsi untuk ...",["Menghasilkan energi listrik","Menghasilkan air laut","Mengatur arah angin","Menyimpan jangkar"],0,"Generator memasok kebutuhan listrik kapal."],
+["Pompa digunakan untuk ...",["Memindahkan fluida","Mengukur panjang kapal","Mengatur warna lampu","Mencatat cuaca"],0,"Pompa memindahkan cairan atau fluida melalui sistem."],
+["Sistem pendingin mesin bertujuan untuk ...",["Menjaga temperatur kerja mesin","Menaikkan tekanan ban","Mengatur arah kompas","Menyaring udara kabin saja"],0,"Pendinginan menjaga mesin bekerja pada suhu yang sesuai."],
+["Alat untuk mengukur tekanan adalah ...",["Manometer","Penggaris","Busur derajat","Timbangan"],0,"Manometer digunakan untuk mengukur tekanan fluida."],
+["Perawatan berkala mesin dilakukan untuk ...",["Menjaga kinerja dan mencegah kerusakan","Membuat mesin cepat rusak","Menghilangkan semua sensor","Mengurangi keselamatan"],0,"Perawatan berkala membantu menjaga keandalan mesin."],
+["Alarm pada ruang mesin berguna untuk ...",["Memberi peringatan kondisi tidak normal","Memutar baling-baling","Mengukur panjang kapal","Menggantikan operator"],0,"Alarm memberi tahu awak tentang kondisi yang perlu diperiksa."],
+["Bahan bakar digunakan mesin untuk menghasilkan ...",["Energi","Air tawar","Udara bersih","Gelombang radio"],0,"Mesin mengubah energi bahan bakar menjadi energi mekanis."],
+["Saat bekerja di ruang mesin, awak harus ...",["Menggunakan APD dan mengikuti prosedur keselamatan","Mengabaikan tanda bahaya","Bekerja tanpa arahan","Melepas pelindung mesin"],0,"APD dan prosedur kerja membantu melindungi awak kapal."]
+],
+
+"Nautika Kapal Penangkap Ikan (NKPI)": [
+["NKPI merupakan singkatan dari ...",["Nautika Kapal Penangkap Ikan","Navigasi Kelautan dan Perikanan Indonesia","Nautika Kelompok Pelayaran Internasional","Niaga Kapal dan Perdagangan Ikan"],0,"NKPI adalah Nautika Kapal Penangkap Ikan."],
+["Tujuan utama kegiatan penangkapan ikan adalah ...",["Memperoleh hasil perikanan secara bertanggung jawab","Menghabiskan seluruh ikan di laut","Merusak habitat laut","Menangkap ikan tanpa aturan"],0,"Penangkapan ikan harus memperhatikan keberlanjutan sumber daya."],
+["Contoh alat penangkapan ikan adalah ...",["Jaring ikan","Mikroskop","Mesin jahit","Printer"],0,"Jaring merupakan salah satu alat penangkapan ikan."],
+["Informasi cuaca laut penting untuk ...",["Merencanakan pelayaran dan kegiatan penangkapan dengan aman","Menentukan warna kapal","Menghitung harga pakaian","Mengatur menu restoran"],0,"Cuaca berpengaruh terhadap keselamatan dan kegiatan di laut."],
+["Hasil tangkapan ikan perlu didinginkan agar ...",["Mutunya tetap terjaga","Warnanya berubah","Beratnya bertambah","Tidak perlu disimpan"],0,"Pendinginan memperlambat penurunan mutu ikan."],
+["Penangkapan ikan yang berkelanjutan berarti ...",["Memperhatikan kelestarian sumber daya ikan","Menangkap semua ikan kecil","Menggunakan cara yang merusak habitat","Mengabaikan aturan"],0,"Keberlanjutan menjaga sumber daya ikan untuk masa depan."],
+["Alat navigasi untuk menentukan posisi kapal dapat berupa ...",["GPS","Blender","Oven","Mikser"],0,"GPS membantu menentukan posisi berdasarkan satelit."],
+["Ikan segar umumnya perlu ditangani dengan ...",["Higienis dan suhu yang sesuai","Dibiarkan terkena panas","Dicampur dengan sampah","Disimpan tanpa wadah"],0,"Penanganan higienis menjaga mutu hasil tangkapan."],
+["Daerah penangkapan ikan dikenal juga dengan istilah ...",["Fishing ground","Front office","Workshop","Dry dock"],0,"Fishing ground adalah daerah tempat kegiatan penangkapan ikan."],
+["Sebelum melaut, awak kapal perlu ...",["Memeriksa perlengkapan dan keselamatan kapal","Mengabaikan prakiraan cuaca","Meninggalkan alat keselamatan","Mengabaikan kondisi kapal"],0,"Pemeriksaan awal penting untuk keselamatan pelayaran."]
+],
+
+"Agribisnis Perikanan Air Payau dan Laut (APAPL)": [
+["Air payau merupakan campuran antara ...",["Air tawar dan air laut","Air hujan dan minyak","Air murni dan bensin","Air sungai dan susu"],0,"Air payau memiliki kadar garam di antara air tawar dan air laut."],
+["Contoh komoditas budidaya air payau adalah ...",["Udang windu","Sapi perah","Ayam pedaging","Kelinci"],0,"Udang windu banyak dibudidayakan di tambak air payau."],
+["Salinitas menunjukkan kadar ...",["Garam terlarut dalam air","Oksigen di udara","Pasir di tanah","Minyak dalam pakan"],0,"Salinitas adalah ukuran kadar garam dalam air."],
+["Parameter kualitas air yang perlu dipantau adalah ...",["pH dan oksigen terlarut","Warna pakaian","Jumlah kendaraan","Tinggi bangunan"],0,"pH dan oksigen terlarut memengaruhi kehidupan organisme budidaya."],
+["Pakan dalam budidaya berfungsi untuk ...",["Memenuhi kebutuhan nutrisi ikan atau udang","Mengubah warna kolam","Mengurangi oksigen","Menggantikan air"],0,"Pakan menyediakan nutrisi untuk pertumbuhan."],
+["Mangrove memiliki manfaat berupa ...",["Melindungi pesisir dan menjadi habitat organisme","Meningkatkan pencemaran","Menghilangkan seluruh biota","Mengurangi perlindungan pantai"],0,"Mangrove membantu menjaga ekosistem pesisir."],
+["Kegiatan memisahkan organisme berdasarkan ukuran disebut ...",["Grading","Packing","Freezing","Smoking"],0,"Grading membantu mengelompokkan hasil budidaya berdasarkan ukuran."],
+["Benur adalah sebutan untuk ...",["Benih udang","Telur ayam","Bibit padi","Anakan sapi"],0,"Benur merupakan benih udang yang digunakan dalam budidaya."],
+["Tujuan menjaga kualitas air tambak adalah ...",["Mendukung pertumbuhan dan kesehatan organisme","Membuat air selalu keruh","Menghilangkan pakan","Menghambat pertumbuhan"],0,"Kualitas air yang baik mendukung kehidupan organisme budidaya."],
+["Panen sebaiknya dilakukan dengan ...",["Memperhatikan ukuran dan kondisi hasil budidaya","Mengabaikan mutu hasil","Mencampur hasil dengan limbah","Merusak kolam"],0,"Panen yang tepat membantu menjaga kualitas hasil budidaya."]
+],
+
+"Agribisnis Pengolahan Hasil Perikanan (APHPI)": [
+["Tujuan utama pengolahan hasil perikanan adalah ...",["Memperpanjang daya simpan dan meningkatkan nilai tambah","Mengurangi mutu ikan","Membuat ikan cepat rusak","Menghilangkan kebersihan"],0,"Pengolahan membantu menjaga mutu dan meningkatkan nilai produk."],
+["Proses menurunkan suhu produk hingga membeku disebut ...",["Pembekuan","Pengeringan","Pengasapan","Penggaraman"],0,"Pembekuan menggunakan suhu rendah untuk memperlambat kerusakan."],
+["Pengasapan ikan menggunakan ...",["Asap dari pembakaran bahan tertentu","Air sabun","Pewarna pakaian","Minyak pelumas"],0,"Pengasapan merupakan metode pengolahan dengan paparan asap."],
+["Sanitasi dalam pengolahan pangan bertujuan untuk ...",["Menjaga kebersihan dan mencegah kontaminasi","Menambah kotoran","Mengurangi keamanan pangan","Mengabaikan peralatan"],0,"Sanitasi mencegah kontaminasi selama proses pengolahan."],
+["Kemasan produk berfungsi untuk ...",["Melindungi produk dan memberi informasi","Mengubah produk menjadi bahan mentah","Menghilangkan tanggal produksi","Membuat produk terbuka"],0,"Kemasan melindungi produk dan menyampaikan informasi kepada konsumen."],
+["Rantai dingin atau cold chain bertujuan untuk ...",["Menjaga suhu produk selama penyimpanan dan distribusi","Memanaskan produk terus-menerus","Menghilangkan kemasan","Mengubah rasa secara acak"],0,"Cold chain menjaga mutu produk yang memerlukan suhu rendah."],
+["Kontaminasi silang dapat terjadi ketika ...",["Bahan mentah mencemari makanan siap konsumsi","Alat dibersihkan dengan benar","Bahan disimpan terpisah","Tangan dicuci sebelum bekerja"],0,"Pemisahan bahan mentah dan matang membantu mencegah kontaminasi silang."],
+["Pengeringan ikan bertujuan untuk mengurangi ...",["Kadar air","Ukuran wadah","Jumlah label","Warna kemasan"],0,"Pengurangan kadar air dapat menghambat pertumbuhan mikroorganisme."],
+["Informasi tanggal kedaluwarsa pada kemasan membantu konsumen mengetahui ...",["Batas waktu konsumsi yang dianjurkan","Harga bahan baku","Nama pemasok alat","Ukuran ruang produksi"],0,"Tanggal kedaluwarsa merupakan informasi penting keamanan pangan."],
+["Pekerja pengolahan ikan perlu menggunakan ...",["Perlengkapan kerja bersih dan sesuai standar higiene","Perhiasan berlebihan","Alat yang kotor","Pakaian yang tidak sesuai"],0,"Higiene pekerja membantu menjaga keamanan produk."]
+],
+
+"Perhotelan": [
+["Bagian hotel yang menangani proses check-in tamu adalah ...",["Front office","Housekeeping","Engineering","Laundry"],0,"Front office menangani pelayanan penerimaan dan informasi tamu."],
+["Housekeeping bertanggung jawab terhadap ...",["Kebersihan dan kerapian kamar","Penyusunan menu dapur","Perbaikan mesin kapal","Promosi kendaraan"],0,"Housekeeping menjaga kebersihan dan kenyamanan area hotel."],
+["Check-out adalah proses ...",["Tamu menyelesaikan masa menginap","Tamu memesan kamar","Pegawai membersihkan dapur","Hotel membeli perlengkapan"],0,"Check-out merupakan proses penyelesaian administrasi saat tamu meninggalkan hotel."],
+["Reservasi berarti ...",["Pemesanan kamar atau layanan","Pembersihan kamar","Penggantian seprai","Pembuatan makanan"],0,"Reservasi dilakukan untuk memesan kamar atau fasilitas."],
+["Sikap penting dalam melayani tamu adalah ...",["Ramah dan sopan","Acuh tak acuh","Kasar","Tidak peduli"],0,"Keramahan dan kesopanan merupakan bagian dari pelayanan hotel."],
+["Bellboy biasanya membantu tamu dalam ...",["Membawa barang bawaan","Memasak makanan","Memperbaiki lift","Mengelola pembukuan"],0,"Bellboy membantu menangani barang bawaan tamu."],
+["Laundry merupakan layanan yang berkaitan dengan ...",["Pencucian pakaian dan linen","Pemesanan tiket kapal","Pemasaran kendaraan","Perawatan tanaman"],0,"Laundry menangani pencucian dan perawatan kain."],
+["Room status menunjukkan ...",["Kondisi atau status kamar","Harga bahan makanan","Jadwal penerbangan","Jumlah kendaraan"],0,"Room status membantu koordinasi bagian hotel."],
+["Jika tamu menyampaikan keluhan, petugas sebaiknya ...",["Mendengarkan dan membantu mencari solusi","Membantah dengan kasar","Mengabaikannya","Menyebarkan keluhan"],0,"Keluhan harus ditangani dengan sopan dan profesional."],
+["SOP dalam pekerjaan hotel adalah ...",["Standar Operasional Prosedur","Sistem Olahraga Pegawai","Surat Order Produk","Standar Ongkos Perjalanan"],0,"SOP menjadi pedoman pelaksanaan pekerjaan."]
+],
+
+"Kuliner": [
+["Mise en place berarti ...",["Persiapan bahan dan peralatan sebelum memasak","Membersihkan kamar hotel","Membuat laporan keuangan","Menyajikan tagihan"],0,"Mise en place membantu pekerjaan dapur lebih teratur."],
+["Teknik memasak dengan air mendidih disebut ...",["Boiling","Grilling","Baking","Frying"],0,"Boiling adalah teknik memasak menggunakan cairan mendidih."],
+["Teknik memasak menggunakan oven disebut ...",["Baking","Boiling","Steaming","Poaching"],0,"Baking menggunakan panas oven."],
+["Pisau dapur harus disimpan ...",["Di tempat aman dan sesuai penyimpanan","Di lantai","Di dalam wastafel penuh air","Bercampur dengan sampah"],0,"Penyimpanan yang benar membantu mencegah kecelakaan."],
+["Tujuan mencuci tangan sebelum mengolah makanan adalah ...",["Mencegah kontaminasi","Mengubah rasa makanan","Mengurangi ukuran bahan","Mempercepat pembusukan"],0,"Kebersihan tangan penting untuk keamanan pangan."],
+["Bahan makanan mentah sebaiknya ...",["Dipisahkan dari makanan matang","Dicampur dengan makanan siap saji","Dibiarkan terbuka","Disimpan bersama bahan kimia"],0,"Pemisahan mencegah kontaminasi silang."],
+["Teknik memasak menggunakan minyak panas disebut ...",["Frying","Steaming","Boiling","Poaching"],0,"Frying merupakan teknik memasak dengan minyak panas."],
+["Resep masakan berisi ...",["Bahan dan langkah pembuatan","Daftar tamu hotel","Jadwal kapal","Laporan mesin"],0,"Resep menjadi panduan untuk membuat hidangan."],
+["Alat untuk menimbang bahan makanan adalah ...",["Timbangan dapur","Kompas","Voltmeter","Barometer"],0,"Timbangan membantu memperoleh takaran bahan yang tepat."],
+["Bahan makanan yang mudah rusak perlu ...",["Disimpan pada suhu yang sesuai","Dibiarkan di bawah sinar matahari","Dicampur dengan bahan pembersih","Disimpan tanpa memperhatikan kebersihan"],0,"Penyimpanan sesuai suhu membantu menjaga keamanan dan mutu pangan."]
+],
+
+"Tata Busana": [
+["Pola busana digunakan sebagai ...",["Pedoman memotong bahan pakaian","Alat mengukur suhu","Bahan pewarna rambut","Alat memasak"],0,"Pola menjadi panduan bentuk dan ukuran bagian pakaian."],
+["Alat untuk mengukur tubuh dalam pembuatan pakaian adalah ...",["Pita ukur","Kompas","Termometer","Voltmeter"],0,"Pita ukur digunakan untuk mengambil ukuran tubuh."],
+["Kampuh dalam menjahit adalah ...",["Bagian sisa kain pada sambungan jahitan","Jenis kancing","Warna benang","Alat pemotong"],0,"Kampuh merupakan bagian kain di sekitar garis jahitan."],
+["Mesin jahit digunakan untuk ...",["Menyambungkan kain dengan jahitan","Mengukur berat kain","Mewarnai benang","Menyetrika pakaian"],0,"Mesin jahit membantu membentuk sambungan pada kain."],
+["Alat untuk memotong kain adalah ...",["Gunting kain","Penghapus","Kuas cat","Obeng"],0,"Gunting kain dirancang untuk memotong bahan tekstil."],
+["Serat kapas termasuk serat ...",["Alami","Logam","Plastik sintetis","Mineral"],0,"Kapas berasal dari tumbuhan dan termasuk serat alami."],
+["Proses merapikan tepi kain agar tidak mudah terurai disebut ...",["Penyelesaian tepi","Pewarnaan rambut","Pencetakan","Pengukuran suhu"],0,"Penyelesaian tepi membantu menjaga kerapian dan ketahanan kain."],
+["Sebelum memotong kain, penjahit perlu ...",["Memeriksa pola dan ukuran","Mengabaikan arah kain","Memotong tanpa tanda","Mencampur semua pola"],0,"Pemeriksaan pola membantu menghindari kesalahan pemotongan."],
+["Setrika digunakan untuk ...",["Merapikan dan membentuk lipatan kain","Memotong benang","Mengukur lingkar pinggang","Menyimpan kancing"],0,"Setrika membantu merapikan hasil jahitan."],
+["Saat menggunakan alat jahit, siswa harus ...",["Mengikuti prosedur keselamatan kerja","Bermain dengan gunting","Menyentuh jarum sembarangan","Mengabaikan instruksi"],0,"Keselamatan penting saat menggunakan jarum dan mesin jahit."]
+],
+
+"Tata Kecantikan": [
+["Konsultasi sebelum perawatan kecantikan bertujuan untuk ...",["Mengetahui kebutuhan dan kondisi pelanggan","Menentukan nilai rapor","Mengatur jadwal kapal","Menghitung stok bahan bangunan"],0,"Konsultasi membantu memilih layanan yang sesuai."],
+["Alat kecantikan yang digunakan harus ...",["Bersih dan sesuai prosedur sanitasi","Dipakai bergantian tanpa dibersihkan","Disimpan dalam keadaan kotor","Dicampur dengan sampah"],0,"Sanitasi alat membantu mencegah penularan kontaminasi."],
+["Makeup remover digunakan untuk ...",["Membersihkan riasan","Mewarnai pakaian","Mencuci rambut saja","Mengukur kelembapan udara"],0,"Makeup remover membantu mengangkat produk riasan."],
+["Sebelum menggunakan produk baru, penting untuk ...",["Memeriksa petunjuk dan kecocokan produk","Mengabaikan label","Menggunakan sebanyak mungkin","Mencampur semua produk"],0,"Petunjuk penggunaan dan kecocokan perlu diperhatikan."],
+["Pelembap wajah berfungsi untuk ...",["Membantu menjaga kelembapan kulit","Mengubah bentuk tulang","Menghilangkan kebutuhan membersihkan wajah","Mewarnai rambut"],0,"Pelembap membantu menjaga kadar air pada kulit."],
+["Sisir digunakan untuk ...",["Merapikan rambut","Mengukur suhu","Memotong kuku","Membersihkan lantai"],0,"Sisir membantu merapikan dan mengatur rambut."],
+["Spons dan kuas makeup perlu dibersihkan untuk ...",["Menjaga kebersihan alat","Mengubah warna alat","Menambah debu","Mengurangi fungsi alat"],0,"Alat yang bersih membantu menjaga higiene."],
+["Produk perawatan kulit sebaiknya dipilih berdasarkan ...",["Kebutuhan dan kondisi kulit","Warna kemasan saja","Harga paling mahal saja","Iklan tanpa membaca informasi"],0,"Pemilihan produk perlu mempertimbangkan kebutuhan dan informasi produk."],
+["Hair conditioner digunakan untuk membantu ...",["Merawat dan melembutkan rambut","Mengukur panjang rambut","Mewarnai kuku","Membersihkan alat makan"],0,"Conditioner membantu menjaga kelembutan dan kemudahan menyisir rambut."],
+["Jika pelanggan merasa tidak nyaman selama perawatan, petugas sebaiknya ...",["Menghentikan proses dan menanyakan kondisinya","Mengabaikannya","Melanjutkan tanpa bertanya","Menyalahkan pelanggan"],0,"Kenyamanan dan keselamatan pelanggan harus diutamakan."]
+]
+
+});
+
+
+// ==========================================
+// BAGIAN 5: MELENGKAPI BANK SOAL UMUM
+// ==========================================
+
+subjects.SMK.push("Kompetensi Kejuruan");
+
+Object.assign(generalBanks, {
+
+"IPAS": [
+["Apa fungsi utama akar pada tumbuhan?",["Menyerap air dan mineral","Menghasilkan bunga","Membentuk buah","Menarik serangga"],0,"Akar menyerap air dan mineral dari tanah."],
+["Perubahan air menjadi uap disebut ...",["Penguapan","Pembekuan","Pengembunan","Pencairan"],0,"Penguapan adalah perubahan zat cair menjadi gas."],
+["Hewan pemakan tumbuhan disebut ...",["Herbivora","Karnivora","Omnivora","Insektivora"],0,"Herbivora memperoleh makanan dari tumbuhan."],
+["Sumber energi utama bagi bumi adalah ...",["Matahari","Bulan","Bintang jatuh","Angin malam"],0,"Matahari menyediakan energi bagi kehidupan di bumi."],
+["Bagian tumbuhan yang berfungsi sebagai tempat fotosintesis adalah ...",["Daun","Akar","Bunga","Buah"],0,"Daun mengandung klorofil untuk fotosintesis."],
+["Contoh benda yang dapat ditarik magnet adalah ...",["Paku besi","Kertas","Kayu","Plastik"],0,"Besi merupakan bahan yang dapat ditarik magnet."],
+["Air yang mengalir dari tempat tinggi ke tempat rendah memiliki energi ...",["Gerak","Bunyi","Kimia saja","Cahaya"],0,"Air yang mengalir memiliki energi gerak."],
+["Kegiatan menanam kembali hutan disebut ...",["Reboisasi","Urbanisasi","Imigrasi","Industrialisasi"],0,"Reboisasi adalah penanaman kembali hutan."],
+["Organ tubuh manusia yang memompa darah adalah ...",["Jantung","Paru-paru","Lambung","Ginjal"],0,"Jantung memompa darah ke seluruh tubuh."],
+["Contoh sumber daya alam yang dapat diperbarui adalah ...",["Tumbuhan","Minyak bumi","Batu bara","Gas alam"],0,"Tumbuhan dapat dibudidayakan kembali."]
+],
+
+"Fisika": [
+["Satuan SI untuk panjang adalah ...",["Meter","Kilogram","Sekon","Ampere"],0,"Meter merupakan satuan dasar panjang."],
+["Kelajuan merupakan hasil pembagian ...",["Jarak dengan waktu","Massa dengan volume","Gaya dengan luas","Energi dengan massa"],0,"Kelajuan dihitung dengan jarak dibagi waktu."],
+["Satuan gaya dalam SI adalah ...",["Newton","Joule","Watt","Pascal"],0,"Gaya diukur dalam newton."],
+["Alat untuk mengukur suhu adalah ...",["Termometer","Barometer","Amperemeter","Dinamometer"],0,"Termometer digunakan untuk mengukur suhu."],
+["Energi yang dimiliki benda karena gerak disebut energi ...",["Kinetik","Potensial","Kimia","Nuklir"],0,"Energi kinetik berkaitan dengan gerak benda."],
+["Hukum Newton I dikenal sebagai hukum ...",["Kelembaman","Aksi-reaksi","Gravitasi universal","Pemuaian"],0,"Hukum Newton I menjelaskan sifat kelembaman benda."],
+["Satuan daya adalah ...",["Watt","Newton","Meter","Kilogram"],0,"Daya merupakan energi per satuan waktu dan diukur dalam watt."],
+["Bunyi dapat merambat melalui ...",["Zat padat, cair, dan gas","Ruang hampa saja","Cahaya saja","Medan magnet saja"],0,"Bunyi memerlukan medium untuk merambat."],
+["Arus listrik diukur menggunakan ...",["Amperemeter","Termometer","Neraca","Mikrometer"],0,"Amperemeter digunakan untuk mengukur kuat arus."],
+["Pemantulan cahaya terjadi ketika cahaya ...",["Mengenai permukaan lalu kembali","Berubah menjadi bunyi","Menghilang seluruhnya","Menjadi massa"],0,"Pemantulan adalah kembalinya cahaya setelah mengenai permukaan."]
+],
+
+"Kimia": [
+["Partikel terkecil penyusun unsur yang masih memiliki sifat unsur adalah ...",["Atom","Sel","Jaringan","Organ"],0,"Atom merupakan partikel dasar penyusun unsur."],
+["Rumus kimia air adalah ...",["H2O","CO2","NaCl","O2"],0,"Air tersusun dari dua atom hidrogen dan satu atom oksigen."],
+["Zat dengan pH kurang dari 7 bersifat ...",["Asam","Basa","Netral","Logam"],0,"Larutan dengan pH di bawah 7 bersifat asam."],
+["Contoh perubahan kimia adalah ...",["Besi berkarat","Es mencair","Air menguap","Gula larut"],0,"Perkaratan menghasilkan zat baru."],
+["Lambang unsur oksigen adalah ...",["O","Ox","Og","Ok"],0,"Lambang unsur oksigen adalah O."],
+["Campuran homogen memiliki komposisi yang ...",["Seragam","Selalu berlapis","Tidak tercampur","Berbeda di setiap bagian"],0,"Campuran homogen memiliki komposisi seragam."],
+["Partikel bermuatan positif dalam atom disebut ...",["Proton","Elektron","Neutron","Molekul"],0,"Proton memiliki muatan positif."],
+["Garam dapur memiliki rumus kimia ...",["NaCl","H2O","CO2","NH3"],0,"Natrium klorida memiliki rumus NaCl."],
+["Pemisahan campuran berdasarkan perbedaan titik didih disebut ...",["Distilasi","Filtrasi","Sublimasi","Kromatografi"],0,"Distilasi memanfaatkan perbedaan titik didih."],
+["Reaksi yang melepaskan energi panas disebut ...",["Eksoterm","Endoterm","Netralisasi saja","Pengendapan"],0,"Reaksi eksoterm melepaskan energi ke lingkungan."]
+],
+
+"Biologi": [
+["Unit struktural dan fungsional terkecil makhluk hidup adalah ...",["Sel","Organ","Jaringan","Sistem organ"],0,"Sel merupakan unit dasar kehidupan."],
+["Tempat berlangsungnya fotosintesis pada sel tumbuhan adalah ...",["Kloroplas","Mitokondria","Ribosom","Nukleus"],0,"Kloroplas mengandung klorofil untuk fotosintesis."],
+["Organ yang berfungsi menyaring darah dan membentuk urine adalah ...",["Ginjal","Jantung","Paru-paru","Lambung"],0,"Ginjal menyaring darah dan menghasilkan urine."],
+["Hubungan antara lebah dan bunga dalam penyerbukan termasuk ...",["Mutualisme","Parasitisme","Kompetisi","Predasi"],0,"Lebah memperoleh nektar dan bunga terbantu proses penyerbukannya."],
+["Materi genetik utama pada makhluk hidup adalah ...",["DNA","Air","Glukosa","Lemak"],0,"DNA menyimpan informasi genetik."],
+["Proses pembentukan makanan oleh tumbuhan disebut ...",["Fotosintesis","Respirasi","Fermentasi","Transpirasi"],0,"Fotosintesis menggunakan energi cahaya untuk membentuk bahan makanan."],
+["Organ pernapasan utama manusia adalah ...",["Paru-paru","Hati","Ginjal","Usus"],0,"Paru-paru menjadi organ utama pertukaran gas."],
+["Keanekaragaman hayati menunjukkan ...",["Variasi kehidupan","Kesamaan semua organisme","Jumlah gedung","Perubahan cuaca"],0,"Keanekaragaman hayati mencakup variasi gen, spesies, dan ekosistem."],
+["Hewan yang memiliki tulang belakang disebut ...",["Vertebrata","Invertebrata","Herbivora","Omnivora"],0,"Vertebrata adalah kelompok hewan bertulang belakang."],
+["Pengurai dalam ekosistem umumnya berupa ...",["Bakteri dan jamur","Harimau dan elang","Kambing dan sapi","Ikan dan burung"],0,"Bakteri dan jamur membantu menguraikan sisa organisme."]
+],
+
+"Ekonomi": [
+["Ilmu ekonomi mempelajari cara manusia ...",["Memenuhi kebutuhan dengan sumber daya terbatas","Menghilangkan seluruh kebutuhan","Menghindari kegiatan produksi","Menghentikan perdagangan"],0,"Ekonomi membahas pilihan dalam menghadapi kelangkaan sumber daya."],
+["Kondisi ketika kebutuhan tidak terbatas sedangkan sumber daya terbatas disebut ...",["Kelangkaan","Kemakmuran mutlak","Distribusi","Konsumsi"],0,"Kelangkaan muncul karena sumber daya terbatas."],
+["Kegiatan menghasilkan barang atau jasa disebut ...",["Produksi","Konsumsi","Distribusi","Promosi"],0,"Produksi menghasilkan barang atau jasa."],
+["Kegiatan menyalurkan barang dari produsen ke konsumen disebut ...",["Distribusi","Produksi","Konsumsi","Investasi"],0,"Distribusi menyalurkan barang atau jasa."],
+["Orang yang menggunakan barang atau jasa disebut ...",["Konsumen","Produsen","Distributor","Investor"],0,"Konsumen menggunakan hasil produksi."],
+["Harga yang dibayar pembeli untuk memperoleh barang disebut ...",["Harga pasar","Biaya tetap","Modal awal","Pajak langsung"],0,"Harga pasar terbentuk melalui interaksi permintaan dan penawaran."],
+["Kenaikan harga barang secara umum dan terus-menerus disebut ...",["Inflasi","Deflasi","Distribusi","Produksi"],0,"Inflasi adalah kenaikan tingkat harga secara umum."],
+["Alat pembayaran yang sah di Indonesia adalah ...",["Rupiah","Ringgit","Yen","Euro"],0,"Rupiah merupakan mata uang Indonesia."],
+["Kegiatan menyimpan uang di bank disebut ...",["Menabung","Memproduksi","Mendistribusikan","Mengonsumsi"],0,"Menabung berarti menyisihkan uang untuk disimpan."],
+["Permintaan adalah jumlah barang yang ...",["Ingin dan mampu dibeli konsumen","Dihasilkan pabrik saja","Disimpan pemerintah","Dibuang produsen"],0,"Permintaan berkaitan dengan keinginan dan kemampuan membeli."]
+],
+
+"Geografi": [
+["Ilmu yang mempelajari fenomena geosfer adalah ...",["Geografi","Biologi","Kimia","Sosiologi"],0,"Geografi mempelajari fenomena di permukaan bumi."],
+["Garis khayal yang membagi bumi menjadi belahan utara dan selatan adalah ...",["Khatulistiwa","Meridian utama","Garis tanggal","Garis bujur 180 derajat"],0,"Khatulistiwa membagi bumi menjadi belahan utara dan selatan."],
+["Peta adalah gambaran permukaan bumi pada bidang ...",["Datar","Bulat sempurna","Cair","Tidak beraturan saja"],0,"Peta menggambarkan permukaan bumi pada bidang datar dengan skala tertentu."],
+["Perbandingan jarak pada peta dengan jarak sebenarnya disebut ...",["Skala","Legenda","Simbol","Orientasi"],0,"Skala menunjukkan perbandingan jarak peta dan jarak sebenarnya."],
+["Lapisan udara yang menyelimuti bumi disebut ...",["Atmosfer","Hidrosfer","Litosfer","Biosfer"],0,"Atmosfer merupakan lapisan gas yang menyelimuti bumi."],
+["Gempa bumi yang disebabkan pergeseran lempeng disebut gempa ...",["Tektonik","Vulkanik","Runtuhan","Buatan"],0,"Gempa tektonik berkaitan dengan pergerakan lempeng bumi."],
+["Proses pengikisan tanah oleh air atau angin disebut ...",["Erosi","Sedimentasi","Evaporasi","Kondensasi"],0,"Erosi merupakan pengikisan permukaan tanah."],
+["Kumpulan air di permukaan bumi termasuk bagian ...",["Hidrosfer","Atmosfer","Litosfer","Antroposfer"],0,"Hidrosfer mencakup seluruh air di bumi."],
+["Perpindahan penduduk dari desa ke kota disebut ...",["Urbanisasi","Imigrasi","Emigrasi","Transmigrasi"],0,"Urbanisasi adalah perpindahan penduduk menuju wilayah perkotaan."],
+["Garis bujur digunakan untuk menentukan ...",["Perbedaan waktu","Jenis tanah","Ketinggian gunung","Curah hujan saja"],0,"Garis bujur menjadi dasar pembagian zona waktu."]
+],
+
+"Sejarah": [
+["Sejarah mempelajari tentang ...",["Peristiwa masa lalu manusia","Ramalan masa depan","Perhitungan kimia","Struktur atom"],0,"Sejarah mengkaji kehidupan dan peristiwa manusia pada masa lampau."],
+["Sumber sejarah berupa tulisan disebut sumber ...",["Tertulis","Lisan","Benda","Visual saja"],0,"Sumber tertulis dapat berupa prasasti, surat, dan dokumen."],
+["Prasasti merupakan contoh sumber sejarah berupa ...",["Tulisan pada benda","Cerita lisan saja","Lagu modern","Foto digital"],0,"Prasasti memuat tulisan pada media seperti batu atau logam."],
+["Kerajaan Hindu tertua yang dikenal di Indonesia adalah ...",["Kutai","Majapahit","Demak","Mataram Islam"],0,"Kerajaan Kutai dikenal melalui prasasti Yupa."],
+["Proklamasi Kemerdekaan Indonesia dibacakan pada tanggal ...",["17 Agustus 1945","20 Mei 1908","1 Juni 1945","10 November 1945"],0,"Proklamasi dibacakan pada 17 Agustus 1945."],
+["Tokoh yang membacakan teks Proklamasi adalah ...",["Soekarno","Mohammad Hatta","Ki Hajar Dewantara","Sutan Sjahrir"],0,"Soekarno membacakan teks Proklamasi didampingi Mohammad Hatta."],
+["Organisasi Budi Utomo berdiri pada tahun ...",["1908","1928","1945","1966"],0,"Budi Utomo berdiri pada 20 Mei 1908."],
+["Sumpah Pemuda diperingati setiap tanggal ...",["28 Oktober","17 Agustus","10 November","2 Mei"],0,"Sumpah Pemuda diikrarkan pada 28 Oktober 1928."],
+["Candi Borobudur merupakan peninggalan bercorak ...",["Buddha","Islam","Kristen","Hindu saja"],0,"Borobudur merupakan candi Buddha."],
+["Peristiwa sejarah perlu dikaji berdasarkan ...",["Bukti dan sumber yang dapat diperiksa","Cerita tanpa bukti saja","Dugaan pribadi","Ramalan"],0,"Kajian sejarah memerlukan sumber dan bukti."]
+],
+
+"Sosiologi": [
+["Sosiologi merupakan ilmu yang mempelajari ...",["Masyarakat dan hubungan sosial","Benda langit","Reaksi kimia","Struktur mesin"],0,"Sosiologi mengkaji masyarakat dan interaksi sosial."],
+["Hubungan timbal balik antara individu disebut ...",["Interaksi sosial","Isolasi geografis","Produksi","Konsumsi"],0,"Interaksi sosial terjadi ketika individu saling berhubungan."],
+["Proses seseorang mempelajari nilai dan norma masyarakat disebut ...",["Sosialisasi","Urbanisasi","Modernisasi","Industrialisasi"],0,"Sosialisasi membantu seseorang memahami kehidupan bermasyarakat."],
+["Aturan yang menjadi pedoman perilaku masyarakat disebut ...",["Norma sosial","Iklim","Komoditas","Teknologi"],0,"Norma sosial mengatur perilaku dalam masyarakat."],
+["Kerja sama membersihkan lingkungan merupakan contoh ...",["Gotong royong","Konflik","Persaingan tidak sehat","Diskriminasi"],0,"Gotong royong adalah kerja sama untuk mencapai tujuan bersama."],
+["Perbedaan suku, budaya, dan bahasa menunjukkan ...",["Keberagaman sosial","Keseragaman mutlak","Isolasi total","Persamaan pekerjaan"],0,"Keberagaman merupakan bagian dari kehidupan masyarakat."],
+["Penyelesaian konflik melalui pihak ketiga yang netral disebut ...",["Mediasi","Kompetisi","Dominasi","Kontravensi"],0,"Mediasi melibatkan pihak ketiga sebagai penengah."],
+["Perubahan sosial adalah perubahan pada ...",["Struktur dan pola kehidupan masyarakat","Rotasi bumi saja","Susunan atom saja","Bentuk planet"],0,"Perubahan sosial terjadi pada kehidupan dan hubungan masyarakat."],
+["Sikap menghargai perbedaan disebut ...",["Toleransi","Intoleransi","Diskriminasi","Egoisme"],0,"Toleransi berarti menghargai perbedaan."],
+["Kelompok sosial terbentuk karena adanya ...",["Interaksi dan tujuan atau kepentingan bersama","Kesamaan warna benda saja","Tidak adanya hubungan","Perbedaan cuaca"],0,"Kelompok sosial melibatkan hubungan antaranggota."]
+],
+
+"Projek Kreatif dan Kewirausahaan": [
+["Wirausaha adalah kegiatan ...",["Menciptakan dan mengembangkan usaha","Menghindari semua risiko","Menghentikan inovasi","Meniru tanpa perencanaan"],0,"Wirausaha mengembangkan peluang usaha dengan kreativitas."],
+["Langkah awal merancang usaha adalah ...",["Mengidentifikasi peluang dan kebutuhan pasar","Langsung membeli semua barang","Mengabaikan konsumen","Menentukan keuntungan tanpa perhitungan"],0,"Peluang usaha perlu dianalisis berdasarkan kebutuhan pasar."],
+["SWOT merupakan analisis terhadap ...",["Kekuatan, kelemahan, peluang, dan ancaman","Harga, warna, ukuran, dan bahan","Modal, utang, pajak, dan gaji saja","Produksi, konsumsi, dan distribusi saja"],0,"SWOT membantu menilai kondisi internal dan eksternal usaha."],
+["Modal usaha adalah ...",["Sumber daya untuk menjalankan usaha","Keuntungan bersih saja","Jumlah pelanggan saja","Daftar pesaing"],0,"Modal dapat berupa uang, peralatan, atau sumber daya lainnya."],
+["Target pasar berarti ...",["Kelompok konsumen yang dituju","Tempat menyimpan alat","Jumlah karyawan","Nama pemasok"],0,"Target pasar menentukan kelompok calon konsumen."],
+["Inovasi produk bertujuan untuk ...",["Memberikan nilai tambah dan memenuhi kebutuhan","Mengurangi manfaat produk","Menghilangkan kualitas","Membuat produk tidak berguna"],0,"Inovasi meningkatkan nilai dan daya saing produk."],
+["Laporan keuangan berguna untuk ...",["Mengetahui kondisi keuangan usaha","Menghias toko","Menentukan cuaca","Mengukur tinggi bangunan"],0,"Laporan keuangan mencatat pemasukan dan pengeluaran."],
+["Keuntungan usaha diperoleh ketika ...",["Pendapatan lebih besar daripada biaya","Biaya selalu lebih besar","Tidak ada penjualan","Semua produk dibagikan gratis"],0,"Keuntungan merupakan selisih positif pendapatan dan biaya."],
+["Kemasan produk yang baik seharusnya ...",["Melindungi produk dan memberi informasi","Membuat produk mudah rusak","Menyembunyikan informasi penting","Mengabaikan kebersihan"],0,"Kemasan melindungi produk dan memberi informasi kepada konsumen."],
+["Evaluasi usaha dilakukan untuk ...",["Menilai hasil dan menentukan perbaikan","Menghentikan semua pencatatan","Mengabaikan keluhan","Menghindari pengembangan"],0,"Evaluasi membantu mengetahui keberhasilan dan kekurangan usaha."]
+] });
+
+// ==========================================
+// BAGIAN 6: SISTEM KUIS DAN PENILAIAN
+// ==========================================
+
+let activeQuestions = [];
+let questionIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+let quizHistory = Number(localStorage.getItem("pabQuizCount") || 0);
+let totalPoints = Number(localStorage.getItem("pabTotalScore") || 0);
+let currentQuizTitle = "";
+
+function makeVocQuestions(major){
+  return convertBank(vocationalBanks[major] || []);
+}
+
+function updateDashboard(){
+  const scoreEl = document.getElementById("totalScore");
+  const countEl = document.getElementById("quizCount");
+  if(scoreEl) scoreEl.textContent = totalPoints;
+  if(countEl) countEl.textContent = quizHistory;
+}
+
+function startQuiz(){
+  const level = document.getElementById("level").value;
+  const grade = document.getElementById("grade").value;
+  const subject = document.getElementById("subject").value;
+  const major = document.getElementById("major").value;
+
+  if(!level || !grade || !subject){
+    alert("Pilih jenjang, kelas, dan mata pelajaran terlebih dahulu.");
+    return;
+  }
+
+  if(level === "SMK" && subject === "Kompetensi Kejuruan" && !major){
+    alert("Pilih jurusan SMK terlebih dahulu.");
+    return;
+  }
+
+  if(level === "SMK" && subject === "Kompetensi Kejuruan"){
+    activeQuestions = makeVocQuestions(major);
+    currentQuizTitle = major;
+  } else {
+    activeQuestions = convertBank(generalBanks[subject] || []);
+    currentQuizTitle = subject;
+  }
+
+  if(activeQuestions.length === 0){
+    alert("Maaf, bank soal untuk pilihan ini belum tersedia.");
+    return;
+  }
+
+  questionIndex = 0;
+  quizScore = 0;
+  quizAnswered = false;
+
+  const area = document.getElementById("quizArea");
+area.classList.remove("hidden");
+
+  area.innerHTML = `
+    <div class="quiz-heading">
+      <h3>${currentQuizTitle}</h3>
+      <p>${level} • Kelas ${grade}</p>
+    </div>
+    <div id="questionContent"></div>
+  `;
+
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const area = document.getElementById("questionContent");
+  if(!area) return;
+
+  if(questionIndex >= activeQuestions.length){
+    finishQuiz();
+    return;
+  }
+
+  quizAnswered = false;
+  const item = activeQuestions[questionIndex];
+
+  area.innerHTML = `
+    <p><b>Soal ${questionIndex + 1} dari ${activeQuestions.length}</b></p>
+    <h3>${item.q}</h3>
+    <div class="answer-list">
+      ${item.a.map((answer,index)=>`
+        <button class="answer-option" onclick="answerQuestion(${index})">
+          ${String.fromCharCode(65+index)}. ${answer}
+        </button>
+      `).join("")}
+    </div>
+    <div id="answerFeedback"></div>
+  `;
+}
+
+function answerQuestion(selected){
+  if(quizAnswered) return;
+  quizAnswered = true;
+
+  const item = activeQuestions[questionIndex];
+  const correct = selected === item.c;
+  if(correct) quizScore++;
+
+  const buttons = document.querySelectorAll(".answer-option");
+  buttons.forEach((button,index)=>{
+    button.disabled = true;
+    if(index === item.c) button.classList.add("correct-answer");
+    if(index === selected && !correct) button.classList.add("wrong-answer");
+  });
+
+  const feedback = document.getElementById("answerFeedback");
+  feedback.innerHTML = `
+    <div class="answer-explanation">
+      <h4>${correct ? "Benar! 🎉" : "Belum tepat."}</h4>
+      <p><b>Jawaban benar:</b> ${item.a[item.c]}</p>
+      <p><b>Pembahasan:</b> ${item.e}</p>
+      <button onclick="nextQuestion()">
+        ${questionIndex === activeQuestions.length-1 ? "Lihat Hasil" : "Soal Berikutnya"}
+      </button>
+    </div>
+  `;
+}
+
+function nextQuestion(){
+  questionIndex++;
+  renderQuestion();
+}
+
+function finishQuiz(){
+  const total = activeQuestions.length;
+  const score = Math.round((quizScore / total) * 100);
+
+  quizHistory++;
+  totalPoints += score;
+
+  localStorage.setItem("pabQuizCount",quizHistory);
+  localStorage.setItem("pabTotalScore",totalPoints);
+  updateDashboard();
+
+  const area = document.getElementById("quizArea");
+  area.innerHTML = `
+    <div class="quiz-result">
+      <h2>🎉 Kuis Selesai!</h2>
+      <h3>${currentQuizTitle}</h3>
+      <h1>${score}</h1>
+      <p>Nilai kamu</p>
+      <p>Jawaban benar: ${quizScore} dari ${total}</p>
+      <p>${score >= 80 ? "Hebat! Pertahankan prestasimu!" : score >= 60 ? "Bagus! Terus tingkatkan belajarmu!" : "Tetap semangat! Coba belajar dan berlatih lagi."}</p>
+      <button onclick="startQuiz()">Ulangi Kuis</button>
+    </div>
+  `;
+}
+
+// ==========================================
+// BAGIAN 7: GAME, PROFIL, DAN PENUTUP
+// ==========================================
+
+// GAME 1: TEBAK ANGKA
+
+let secretNumber = Math.floor(Math.random()*10)+1;
+
+function playGuess(){
+  const field = document.getElementById("guess");
+  const result = document.getElementById("guessResult");
+  const guess = Number(field.value);
+
+  if(!field.value || guess < 1 || guess > 10){
+    result.textContent = "Masukkan angka dari 1 sampai 10.";
+    return;
+  }
+
+  if(guess === secretNumber){
+    result.textContent = "Benar! Kamu berhasil menebak angka! 🎉";
+    secretNumber = Math.floor(Math.random()*10)+1;
+    field.value = "";
+  } else if(guess < secretNumber){
+    result.textContent = "Angkanya terlalu kecil. Coba lagi!";
+  } else {
+    result.textContent = "Angkanya terlalu besar. Coba lagi!";
+  }
+}
+
+// GAME 2: MATEMATIKA CEPAT
+
+let mathAnswerValue = 0;
+
+function newMath(){
+  const a = Math.floor(Math.random()*20)+1;
+  const b = Math.floor(Math.random()*20)+1;
+  const operations = ["+","-","×"];
+  const operation = operations[Math.floor(Math.random()*operations.length)];
+
+  if(operation === "+") mathAnswerValue = a+b;
+  if(operation === "-") mathAnswerValue = a-b;
+  if(operation === "×") mathAnswerValue = a*b;
+
+  const question = document.getElementById("mathQuestion");
+  const answer = document.getElementById("mathAnswer");
+  const result = document.getElementById("mathResult");
+
+  if(question) question.textContent = `${a} ${operation} ${b} = ?`;
+  if(answer) answer.value = "";
+  if(result) result.textContent = "";
+}
+
+function checkMath(){
+  const answer = document.getElementById("mathAnswer");
+  const result = document.getElementById("mathResult");
+
+  if(!answer.value){
+    result.textContent = "Masukkan jawaban terlebih dahulu.";
+    return;
+  }
+
+  if(Number(answer.value) === mathAnswerValue){
+    result.textContent = "Benar! Hebat! 🎉";
+  } else {
+    result.textContent = "Belum tepat. Coba sekali lagi!";
+  }
+}
+
+// PROFIL PENGGUNA
+
+function saveProfile(){
+  const name = document.getElementById("studentName").value.trim();
+  const result = document.getElementById("profileResult");
+
+  if(!name){
+    result.textContent = "Masukkan nama terlebih dahulu.";
+    return;
+  }
+
+  localStorage.setItem("pabStudentName",name);
+  result.textContent = "Profil berhasil disimpan!";
+  loadProfile();
+}
+
+function loadProfile(){
+  const name = localStorage.getItem("pabStudentName");
+  const input = document.getElementById("studentName");
+
+  if(name && input) input.value = name;
+}
+
+// NAVIGASI HALAMAN
+
+function showPage(id,btn){
+  document.querySelectorAll(".page").forEach(page=>{
+    page.style.display = "none";
+  });
+
+  const selectedPage = document.getElementById(id);
+  if(selectedPage) selectedPage.style.display = "block";
+
+  document.querySelectorAll(".nav-btn").forEach(button=>{
+    button.classList.remove("active");
+  });
+
+  if(btn) btn.classList.add("active");
+}
+
+// MEMUAT DATA SAAT APLIKASI DIBUKA
+
+document.addEventListener("DOMContentLoaded",()=>{
+  updateClasses();
+  updateDashboard();
+  loadProfile();
+  newMath();
+
+  const pages = document.querySelectorAll(".page");
+  pages.forEach((page,index)=>{
+    page.style.display = index === 0 ? "block" : "none";
+  });
+});
+
+// ==========================================
+// AKHIR JAVASCRIPT
+// ==========================================
+</script>
+</body>
+</html>
